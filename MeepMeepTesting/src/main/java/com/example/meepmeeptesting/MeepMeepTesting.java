@@ -2,9 +2,17 @@ package com.example.meepmeeptesting;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 
+import javax.imageio.ImageIO;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 import org.rowlandhall.meepmeep.MeepMeep;
 import org.rowlandhall.meepmeep.roadrunner.DefaultBotBuilder;
 import org.rowlandhall.meepmeep.roadrunner.entity.RoadRunnerBotEntity;
+
+import java.awt.Image;
+import java.io.File;
+import java.io.IOException;
 
 public class MeepMeepTesting {
     public static void main(String[] args) {
@@ -24,8 +32,21 @@ public class MeepMeepTesting {
                         .turn(Math.toRadians(90))
                         .build());
 
+        Image img = null;
 
-        meepMeep.setBackground(MeepMeep.Background.FIELD_INTOTHEDEEP_JUICE_DARK)
+        Path relativePath = Paths.get("assets", "decode-custom-field.png");
+        Path absolutePath = relativePath.toAbsolutePath();
+        System.out.println("Absolute Path to Image: " + absolutePath);
+
+        try { img = ImageIO.read(new File(absolutePath.toString())); }
+        catch(IOException e) {}
+
+
+
+
+
+        meepMeep.setBackground(img)
+//      meepMeep.setBackground(MeepMeep.Background.FIELD_INTOTHEDEEP_JUICE_DARK)
                 .setDarkMode(true)
                 .setBackgroundAlpha(0.95f)
                 .addEntity(myBot)
