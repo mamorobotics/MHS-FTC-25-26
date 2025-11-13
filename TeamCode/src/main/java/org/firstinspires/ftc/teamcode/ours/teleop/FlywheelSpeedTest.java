@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.util.Range; // Import Range to keep power within limits
 
 @TeleOp(name = "FlywheelSpeedTest")
 public class FlywheelSpeedTest extends LinearOpMode {
@@ -23,7 +24,12 @@ public class FlywheelSpeedTest extends LinearOpMode {
     private static final double INCHES_PER_FOOT = 12.0;
     private static final double INCHES_PER_METER = 39.37007874;
 
-    private static final double POWER_STEP = 0.02;
+    private double currentPower = 0.0;
+
+    private boolean aWasPressedLast = false;
+    private boolean yWasPressedLast = false;
+
+    private static final double POWER_STEP = 0.05;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -37,6 +43,11 @@ public class FlywheelSpeedTest extends LinearOpMode {
         m1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         m2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
+        m1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        m2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+
+
+
         telemetry.addLine("FlywheelSpeedTest ready.");
         telemetry.addLine("Right stick: up = faster, down = slower.");
         telemetry.update();
@@ -46,15 +57,30 @@ public class FlywheelSpeedTest extends LinearOpMode {
         while (opModeIsActive()) {
             double stick = -gamepad1.right_stick_y;
 
-            double power = stick;
-            if (stick > 0) {
-                power += 0.02 * stick;  // increase power gradually
-            } else if (stick < 0) {
-                power += 0.02 * stick;  // decrease power gradually
+            if (Math.abs(stick) > 0.1) {
+                currentPower = stick;
             }
 
-            m1.setPower(power);
-            m2.setPower(power);
+            // 2. Y button increments the power (on a single press)
+            if (gamepad1.y && !yWasPressedLast) {
+                currentPower += POWER_STEP;
+            }
+            yWasPressedLast = gamepad1.y; // Update for next loop
+
+            // 3. A button decrements the power (on a single press)
+            if (gamepad1.a && !aWasPressedLast) {
+                currentPower -= POWER_STEP;
+            }
+            aWasPressedLast = gamepad1.a; // Update for next loop
+
+
+            // --- MOTOR CONTROL ---
+
+            // 4. Clip the final power value to ensure it's valid (-1.0 to 1.0)
+            currentPower = Range.clip(currentPower, -1.0, 1.0);
+            // 5. Apply the final, calculated power to the motors
+            m1.setPower(currentPower);
+            m2.setPower(currentPower);
 
             double tps1 = Math.abs(m1.getVelocity());
             double tps2 = Math.abs(m2.getVelocity());
@@ -66,7 +92,7 @@ public class FlywheelSpeedTest extends LinearOpMode {
             double ips2 = (rpm2 / SECONDS_PER_MINUTE) * FLYWHEEL_CIRCUMFERENCE_IN;
 
             telemetry.addData("Stick (up=+)", "%.2f", stick);
-            telemetry.addData("Power", "%.2f", power);
+            telemetry.addData("Power", "%.2f", currentPower);
 
             telemetry.addLine("--- Motor 1 ---");
             telemetry.addData("Ticks/sec", "%.1f", tps1);
