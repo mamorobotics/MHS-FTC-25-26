@@ -23,7 +23,8 @@ public class DecodeDriverMode extends OpMode
     private static final double flywheelStep = 0.02;  // how much triggers change per loop
     private static final double flywheelFixedSpeed = 0.75;
 
-
+    /// Misha edit: adding intake fixed speed. Value should be between 0.5 - 1.0 (0.5 = stop, 1 = max speed forward)
+    private static final double intakeFixedSpeed = 0.9;
     private double rampPos = 0.50;               // start centered-ish
     private static final double rampStep = 0.05;
 
@@ -32,6 +33,10 @@ public class DecodeDriverMode extends OpMode
     private boolean lastDpadDown = false;
     private boolean lastA = false;
 
+    /// Misha Edit: adding boolean var -- intakeSpin: toggle on/off with x key
+    /// Also, lastXpadDown -- if pressed: down, else: up
+    private boolean intakeSpin = false;
+    private boolean lastXpadPressed = false;
 
 
     @Override
@@ -59,6 +64,19 @@ public class DecodeDriverMode extends OpMode
         IntakeBandR = hardwareMap.get(Servo.class, "rightIntakeBand");
         Ramp = hardwareMap.get(Servo.class, "ramp");
 
+        //Misha edit: adding inverted directions to intake motors -- direction may be flipped.
+        IntakeBrushL.setDirection(Servo.Direction.FORWARD);
+        IntakeBrushR.setDirection(Servo.Direction.REVERSE);
+        TransferL.setDirection(Servo.Direction.FORWARD);
+        TransferR.setDirection(Servo.Direction.REVERSE);
+        IntakeBandL.setDirection(Servo.Direction.FORWARD);
+        IntakeBandR.setDirection(Servo.Direction.REVERSE);
+
+        /// Misha Edit: setting zero power setting for intake servos to brake/stop moving
+        /// Actually, there is no such thing, not using this.
+        ///IntakeBrushL.setZeroPowerBehavior(Servo.ZeroPowerBehavior.BRAKE);
+
+
         Ramp.setPosition(rampPos);
 
         telemetry.addLine("TeleOp Initialized");
@@ -70,6 +88,8 @@ public class DecodeDriverMode extends OpMode
     @Override
     public void loop()
     {
+
+
 
         // Drivetrain
         double y = -gamepad1.left_stick_y;
@@ -115,6 +135,46 @@ public class DecodeDriverMode extends OpMode
         rampPos = Range.clip(rampPos, 0.0, 1.0);
         Ramp.setPosition(rampPos);
 
+
+        ///  Misha Edit: press x -- turn intake motors on, press x again -- turn intake motors off
+
+        boolean xPressed;
+        xPressed = gamepad1.x;
+
+        //// This code should work after re-coding servos to continually rotate like motor.
+        /// Note on how to use servos:
+        /// servo.setDirection(Servo.Direction.FORWARD);
+        /// servo.setPosition(1.0);   // spins forward
+        /// servo.setPosition(0.5);   // stop --- may need to adjust value slightly
+        /// servo.setPosition(0.0);   // spins backward
+
+        ///Function to toggle spin between on/off
+
+        if (xPressed && !lastXpadPressed) {
+            intakeSpin = !intakeSpin;;
+
+        lastXpadPressed = xPressed;
+
+
+        if (intakeSpin) {
+            IntakeBrushL.setPosition(intakeFixedSpeed);
+            IntakeBrushR.setPosition(intakeFixedSpeed);
+            TransferL.setPosition(intakeFixedSpeed);
+            TransferR.setPosition(intakeFixedSpeed);
+            IntakeBandL.setPosition(intakeFixedSpeed);
+            IntakeBandR.setPosition(intakeFixedSpeed);
+        } else {
+            IntakeBrushL.setPosition(0.5);
+            IntakeBrushR.setPosition(0.5);
+            TransferL.setPosition(0.5);
+            TransferR.setPosition(0.5);
+            IntakeBandL.setPosition(0.5);
+            IntakeBandR.setPosition(0.5);
+        }
+
+
+
+        }
     }
 
 }
