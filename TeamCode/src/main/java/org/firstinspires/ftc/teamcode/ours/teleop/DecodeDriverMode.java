@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.ours.teleop;
 import com.qualcomm.hardware.bosch.BHI260IMU;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -14,9 +15,9 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 @ TeleOp(name = "DecodeTeleOp")
 public class DecodeDriverMode extends OpMode
 {
-    private static DcMotor FlyL, FlyR;
-    private static Servo IntakeBrushL, IntakeBrushR, IntakeBandL, IntakeBandR, TransferL, TransferR, Ramp;
-
+    private DcMotor FlyL, FlyR;
+    private CRServo IntakeBrushL, IntakeBrushR, TransferL, TransferR;
+    private Servo Ramp;
     static DriveTrain driveTrain = new DriveTrain();
 
     private double flywheelPower = 0.0;          // current flywheel power [0..1]
@@ -24,7 +25,9 @@ public class DecodeDriverMode extends OpMode
     private static final double flywheelFixedSpeed = 0.75;
 
     /// Misha edit: adding intake fixed speed. Value should be between 0.5 - 1.0 (0.5 = stop, 1 = max speed forward)
-    private static final double intakeFixedSpeed = 0.9;
+    private static final double intakeRunSpeed = 0.9;
+    //May need to adjust below stop speed.
+    private static final double intakeStopSpeed = 0.5;
     private double rampPos = 0.50;               // start centered-ish
     private static final double rampStep = 0.05;
 
@@ -56,21 +59,21 @@ public class DecodeDriverMode extends OpMode
         FlyL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         FlyR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
-        IntakeBrushL = hardwareMap.get(Servo.class, "leftBrushIntake");
-        IntakeBrushR = hardwareMap.get(Servo.class, "rightBrushIntake");
-        TransferL = hardwareMap.get(Servo.class, "leftTransfer");
-        TransferR = hardwareMap.get(Servo.class, "rightTransfer");
-        IntakeBandL = hardwareMap.get(Servo.class, "leftIntakeBand");
-        IntakeBandR = hardwareMap.get(Servo.class, "rightIntakeBand");
+        IntakeBrushL = hardwareMap.get(CRServo.class, "leftBrushIntake");
+        IntakeBrushR = hardwareMap.get(CRServo.class, "rightBrushIntake");
+        TransferL = hardwareMap.get(CRServo.class, "leftTransfer");
+        TransferR = hardwareMap.get(CRServo.class, "rightTransfer");
+        //IntakeBandL = hardwareMap.get(Servo.class, "leftIntakeBand");
+        //IntakeBandR = hardwareMap.get(Servo.class, "rightIntakeBand");
         Ramp = hardwareMap.get(Servo.class, "ramp");
 
         //Misha edit: adding inverted directions to intake motors -- direction may be flipped.
-        IntakeBrushL.setDirection(Servo.Direction.FORWARD);
-        IntakeBrushR.setDirection(Servo.Direction.REVERSE);
-        TransferL.setDirection(Servo.Direction.FORWARD);
-        TransferR.setDirection(Servo.Direction.REVERSE);
-        IntakeBandL.setDirection(Servo.Direction.FORWARD);
-        IntakeBandR.setDirection(Servo.Direction.REVERSE);
+        IntakeBrushL.setDirection(CRServo.Direction.FORWARD);
+        IntakeBrushR.setDirection(CRServo.Direction.REVERSE);
+        TransferL.setDirection(CRServo.Direction.FORWARD);
+        TransferR.setDirection(CRServo.Direction.REVERSE);
+        //IntakeBandL.setDirection(Servo.Direction.FORWARD);
+        //IntakeBandR.setDirection(Servo.Direction.REVERSE);
 
         /// Misha Edit: setting zero power setting for intake servos to brake/stop moving
         /// Actually, there is no such thing, not using this.
@@ -157,19 +160,19 @@ public class DecodeDriverMode extends OpMode
 
 
         if (intakeSpin) {
-            IntakeBrushL.setPosition(intakeFixedSpeed);
-            IntakeBrushR.setPosition(intakeFixedSpeed);
-            TransferL.setPosition(intakeFixedSpeed);
-            TransferR.setPosition(intakeFixedSpeed);
-            IntakeBandL.setPosition(intakeFixedSpeed);
-            IntakeBandR.setPosition(intakeFixedSpeed);
+            IntakeBrushL.setPower(intakeRunSpeed);
+            IntakeBrushR.setPower(intakeRunSpeed);
+            TransferL.setPower(intakeRunSpeed);
+            TransferR.setPower(intakeRunSpeed);
+            //IntakeBandL.setPower(intakeRunspeed);
+            //IntakeBandR.setPower(intakeRunSpeed);
         } else {
-            IntakeBrushL.setPosition(0.5);
-            IntakeBrushR.setPosition(0.5);
-            TransferL.setPosition(0.5);
-            TransferR.setPosition(0.5);
-            IntakeBandL.setPosition(0.5);
-            IntakeBandR.setPosition(0.5);
+            IntakeBrushL.setPower(intakeStopSpeed);
+            IntakeBrushR.setPower(intakeStopSpeed);
+            TransferL.setPower(intakeStopSpeed);
+            TransferR.setPower(intakeStopSpeed);
+            //IntakeBandL.setPosition(intakeStopSpeed);
+            //IntakeBandR.setPosition(intakeStopSpeed);
         }
 
 
