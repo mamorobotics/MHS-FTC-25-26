@@ -1,6 +1,6 @@
-package com.example.meepmeeptesting.intoTheDeep;
+package com.example.meepmeeptesting.legacy.intoTheDeep;
 
-import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.Pose2d;
 
 import org.rowlandhall.meepmeep.MeepMeep;
 import org.rowlandhall.meepmeep.core.colorscheme.scheme.ColorSchemeBlueDark;

@@ -1,11 +1,12 @@
-package com.example.meepmeeptesting.powerPlay;
+package com.example.meepmeeptesting.legacy.powerPlay;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 
 import org.rowlandhall.meepmeep.MeepMeep;
 import org.rowlandhall.meepmeep.roadrunner.DefaultBotBuilder;
 import org.rowlandhall.meepmeep.roadrunner.entity.RoadRunnerBotEntity;
-public class red_far {
+
+public class blue_far {
     public static void main(String[] args)
     {
         MeepMeep meepMeep = new MeepMeep(600);
@@ -13,24 +14,24 @@ public class red_far {
         RoadRunnerBotEntity mybot = new DefaultBotBuilder(meepMeep)
                 .setConstraints(52.48180821614297, 52.48180821614297, Math.toRadians(184.02607784577722), Math.toRadians(184.02607784577722), 16.34)
                 .followTrajectorySequence(drive ->
-                        drive.trajectorySequenceBuilder(new Pose2d(36,-62,Math.toRadians(90)))
-                                .lineToSplineHeading(new Pose2d(36, 12, Math.toRadians(90)))
-                                .lineToSplineHeading(new Pose2d(36, -12, Math.toRadians(90)))
+                        drive.trajectorySequenceBuilder(new Pose2d(-36,62,Math.toRadians(270)))
+                                .lineToSplineHeading(new Pose2d(-36, -12, Math.toRadians(270)))
+                                .lineToSplineHeading(new Pose2d(-36, 12, Math.toRadians(270)))
                                 .turn(Math.toRadians(135))
                                 .waitSeconds(0.5)
                                 .turn(Math.toRadians(135))
                                 .forward(20)
                                 .waitSeconds(0.5)
-                                .lineToLinearHeading(new Pose2d(36, -12, Math.toRadians(0)))
+                                .lineToLinearHeading(new Pose2d(-36, 12, Math.toRadians(180)))
                                 .turn(Math.toRadians(-135))
                                 .waitSeconds(0.5)
                                 .turn(Math.toRadians(45))
-                                .lineToSplineHeading((new Pose2d(36,-36,Math.toRadians(270))))
+                                .lineToSplineHeading((new Pose2d(-36,36,Math.toRadians(90))))
                                 // two [already there]
                                 // one
-                                .lineToLinearHeading(new Pose2d(12, -36, Math.toRadians(270)))
+                                .lineToLinearHeading(new Pose2d(-12, 36, Math.toRadians(90)))
                                 //three
-                                .lineToLinearHeading(new Pose2d(62, -36, Math.toRadians(270)))
+                                .lineToLinearHeading(new Pose2d(-62, 36, Math.toRadians(90)))
                                 .build()
                         );
 
