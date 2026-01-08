@@ -46,7 +46,7 @@ public class DecodeDriverMode extends OpMode
         driveTrain.setDriveTrain(hardwareMap, "frontLeft", "backLeft", "frontRight", "backRight");
         driveTrain.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         driveTrain.setRunMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        driveTrain.reverse(DriveTrain.DriveTrainSide.LEFT);
+        //driveTrain.reverse(DriveTrain.DriveTrainSide.LEFT);
 
         FlyL = hardwareMap.get(DcMotor.class, "leftLauncher");
         FlyR = hardwareMap.get(DcMotor.class, "rightLauncher");
@@ -102,17 +102,17 @@ public class DecodeDriverMode extends OpMode
 
         driveTrain.move(x, y, r, speed);
 
-        boolean a = gamepad1.a;
+        boolean a = gamepad2.a;
 
-        boolean b = gamepad1.b;
+        boolean b = gamepad2.b;
 
         if (a && !lastA) {
             flywheelPower = flywheelFixedSpeed;
         }
         lastA = a;
 
-        double up = gamepad1.right_trigger;
-        double down = gamepad1.left_trigger;
+        double up = gamepad2.right_trigger;
+        double down = gamepad2.left_trigger;
 
         if (up > 0.05) flywheelPower += flywheelStep * up;
         if (down > 0.05) flywheelPower -= flywheelStep * down;
@@ -123,8 +123,8 @@ public class DecodeDriverMode extends OpMode
         FlyR.setPower(flywheelPower);
 
 
-        boolean dUp = gamepad1.dpad_up;
-        boolean dDown = gamepad1.dpad_down;
+        boolean dUp = gamepad2.dpad_up;
+        boolean dDown = gamepad2.dpad_down;
 
         if (dUp && !lastDpadUp) {
             rampPos += rampStep;
@@ -137,7 +137,7 @@ public class DecodeDriverMode extends OpMode
         lastDpadDown = dDown;
 
         rampPos = Range.clip(rampPos, 0.0, 1.0);
-        Ramp.setPosition(rampPos);
+        //Ramp.setPosition(rampPos);
 
 
         ///  Misha Edit: press x -- turn intake motors on, press x again -- turn intake motors off
