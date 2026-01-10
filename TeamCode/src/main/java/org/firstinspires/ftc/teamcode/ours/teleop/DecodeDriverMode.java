@@ -27,7 +27,7 @@ public class DecodeDriverMode extends OpMode
     //May need to adjust below stop speed.
     private static final double intakeStopSpeed = 0.5;
     private double rampPos = 0.50;               // start centered-ish
-    private static final double rampStep = 0.05;
+    private static final double rampStep = 0.03;
 
 
     private boolean lastDpadUp = false;
@@ -143,7 +143,7 @@ public class DecodeDriverMode extends OpMode
         ///  Misha Edit: press x -- turn intake motors on, press x again -- turn intake motors off
 
         boolean xPressed;
-        xPressed = gamepad1.x;
+        xPressed = gamepad2.x;
 
         //// This code should work after re-coding servos to continually rotate like motor.
         /// Note on how to use servos:
@@ -154,20 +154,20 @@ public class DecodeDriverMode extends OpMode
 
         ///Function to toggle spin between on/off
 
-        if (xPressed && !lastXpadPressed) {
-            intakeSpin = !intakeSpin;
+        if (xPressed)
+        {
+            //intakeSpin = !intakeSpin;
 
-        lastXpadPressed = xPressed;
-
-
-        if (intakeSpin) {
+            //lastXpadPressed = xPressed;
             IntakeBrushL.setPower(intakeRunSpeed);
             IntakeBrushR.setPower(intakeRunSpeed);
             TransferL.setPower(intakeRunSpeed);
             TransferR.setPower(intakeRunSpeed);
             //IntakeBandL.setPower(intakeRunspeed);
             //IntakeBandR.setPower(intakeRunSpeed);
-        } else {
+        }
+        else
+        {
             IntakeBrushL.setPower(intakeStopSpeed);
             IntakeBrushR.setPower(intakeStopSpeed);
             TransferL.setPower(intakeStopSpeed);
@@ -176,7 +176,7 @@ public class DecodeDriverMode extends OpMode
             //IntakeBandR.setPosition(intakeStopSpeed);
         }
 
-        if (b) {
+        if (gamepad2.b) {
             Ramp.setPosition(0);
         }
         else {
@@ -188,4 +188,4 @@ public class DecodeDriverMode extends OpMode
         }
     }
 
-}
+
