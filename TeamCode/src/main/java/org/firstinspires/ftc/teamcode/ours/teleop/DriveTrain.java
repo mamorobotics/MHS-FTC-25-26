@@ -8,7 +8,7 @@ public class DriveTrain {
         RIGHT, LEFT
     }
 
-    private static DcMotor FL, BL, FR, BR;
+    public static DcMotor FL, BL, FR, BR;
 
     public void setDriveTrain(HardwareMap hardwareMap, String frontLeft, String backLeft, String frontRight, String backRight) {
         FL = hardwareMap.get(DcMotor.class, frontLeft);
