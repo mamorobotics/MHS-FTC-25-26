@@ -25,7 +25,7 @@ public class DecodeDriverMode extends OpMode
     /// Misha edit: adding intake fixed speed. Value should be between 0.5 - 1.0 (0.5 = stop, 1 = max speed forward)
     private static final double intakeRunSpeed = 0.9;
     //May need to adjust below stop speed.
-    private static final double intakeStopSpeed = 0.5;
+    private static final double intakeStopSpeed = 0;
     private double rampPos = 0.50;               // start centered-ish
     private static final double rampStep = 0.03;
 
