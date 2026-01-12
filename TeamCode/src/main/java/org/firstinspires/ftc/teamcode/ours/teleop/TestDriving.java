@@ -16,6 +16,7 @@ public class TestDriving extends OpMode {
         driveTrain.setDriveTrain(hardwareMap, "frontLeft", "backLeft", "frontRight", "backRight");
         driveTrain.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         driveTrain.setRunMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        driveTrain.reverse(DriveTrain.DriveTrainSide.LEFT);
     }
 
 
