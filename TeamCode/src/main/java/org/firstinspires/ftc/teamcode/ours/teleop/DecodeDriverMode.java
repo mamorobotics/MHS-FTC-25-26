@@ -15,29 +15,54 @@ public class DecodeDriverMode extends OpMode
 {
     private static DcMotor FlyL, FlyR;
     private static CRServo IntakeBrushL, IntakeBrushR, TransferL, TransferR;
-    private static Servo Ramp;
+    private static Servo Gate;
     static DriveTrain driveTrain = new DriveTrain();
+
+    // Flywheel:
 
     private double flywheelPower = 0.0;          // current flywheel power [0..1]
     private static final double flywheelStep = 0.02;  // how much triggers change per loop
-    private static final double flywheelFixedSpeed = 0.75;
+    private static final double flywheelFixedSpeed = 0.5;
 
-    /// Misha edit: adding intake fixed speed. Value should be between 0.5 - 1.0 (0.5 = stop, 1 = max speed forward)
-    private static final double intakeRunSpeed = 0.9;
-    //May need to adjust below stop speed.
-    private static final double intakeStopSpeed = 0;
-    private double rampPos = 0.50;               // start centered-ish
-    private static final double rampStep = 0.03;
+    private boolean flywheelOn = false;
 
+    // Intake / Transfer:
 
-    private boolean lastDpadUp = false;
-    private boolean lastDpadDown = false;
-    private boolean lastA = false;
-
-    /// Misha Edit: adding boolean var -- intakeSpin: toggle on/off with x key
-    /// Also, lastXpadDown -- if pressed: down, else: up
     private boolean intakeSpin = false;
-    private boolean lastXpadPressed = false;
+    private boolean transferSpin = false;
+    private static final double intakeStopSpeed = 0;
+    private static final double intakeRunSpeed = 0.4;
+
+
+    // Gate:
+    private static final double gateDownPos = 0.01;
+    private static final double gateUpPos = 0.03;
+    private boolean gateUp = false; // currently not used
+    private static final double gateStep = 0.005; // only for testing / calibration
+    private static final double gatePos = 0.01; // only for testing / calibration
+
+
+    // Ramp:
+
+    private double rampPos = 0.5; // PLACEHOLDER - calibrate
+    private double rampStep = 0.05; // PLACEHOLDER - calibrate
+
+
+    private boolean lastA2 = false;
+    private boolean lastX2 = false;
+    private boolean lastY2 = false;
+    private boolean lastB2 = false;
+
+//    private boolean lastDpadUp = false;
+//    private boolean lastDpadDown = false;
+//    private boolean lastA = false;
+//
+//    /// Misha Edit: adding boolean var -- intakeSpin: toggle on/off with x key
+//    /// Also, lastXpadDown -- if pressed: down, else: up
+//
+//    private boolean lastXpadPressed = false;
+//
+//    private boolean bPressed = false;
 
 
     @Override
@@ -46,39 +71,27 @@ public class DecodeDriverMode extends OpMode
         driveTrain.setDriveTrain(hardwareMap, "frontLeft", "backLeft", "frontRight", "backRight");
         driveTrain.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         driveTrain.setRunMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        //driveTrain.reverse(DriveTrain.DriveTrainSide.LEFT);
+        driveTrain.reverse(DriveTrain.DriveTrainSide.LEFT);
 
         FlyL = hardwareMap.get(DcMotor.class, "leftLauncher");
         FlyR = hardwareMap.get(DcMotor.class, "rightLauncher");
-
         FlyL.setDirection(DcMotor.Direction.FORWARD);
         FlyR.setDirection(DcMotor.Direction.REVERSE);
-
-        FlyL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        FlyR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        FlyL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        FlyR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         IntakeBrushL = hardwareMap.get(CRServo.class, "leftIntake");
         IntakeBrushR = hardwareMap.get(CRServo.class, "rightIntake");
-        TransferL = hardwareMap.get(CRServo.class, "leftTransfer");
-        TransferR = hardwareMap.get(CRServo.class, "rightTransfer");
-        //IntakeBandL = hardwareMap.get(Servo.class, "leftIntakeBand");
-        //IntakeBandR = hardwareMap.get(Servo.class, "rightIntakeBand");
-        Ramp = hardwareMap.get(Servo.class, "gate");
-
-        //Misha edit: adding inverted directions to intake motors -- direction may be flipped.
         IntakeBrushL.setDirection(CRServo.Direction.FORWARD);
         IntakeBrushR.setDirection(CRServo.Direction.REVERSE);
+
+        TransferL = hardwareMap.get(CRServo.class, "leftTransfer");
+        TransferR = hardwareMap.get(CRServo.class, "rightTransfer");
         TransferL.setDirection(CRServo.Direction.FORWARD);
         TransferR.setDirection(CRServo.Direction.REVERSE);
-        //IntakeBandL.setDirection(Servo.Direction.FORWARD);
-        //IntakeBandR.setDirection(Servo.Direction.REVERSE);
 
-        /// Misha Edit: setting zero power setting for intake servos to brake/stop moving
-        /// Actually, there is no such thing, not using this.
-        ///IntakeBrushL.setZeroPowerBehavior(Servo.ZeroPowerBehavior.BRAKE);
-
-
-        Ramp.setPosition(rampPos);
+        Gate = hardwareMap.get(Servo.class, "gate");
+        Gate.setPosition(gateDownPos);
 
         telemetry.addLine("TeleOp Initialized");
         telemetry.update();
@@ -90,8 +103,6 @@ public class DecodeDriverMode extends OpMode
     public void loop()
     {
 
-
-
         // Drivetrain
         double y = -gamepad1.left_stick_y;
         double x =  gamepad1.left_stick_x;  // strafe
@@ -102,89 +113,101 @@ public class DecodeDriverMode extends OpMode
 
         driveTrain.move(x, y, r, speed);
 
-        boolean a = gamepad2.a;
 
-        boolean b = gamepad2.b;
+        // Launcher
+        manageLauncher();
 
-        if (a && !lastA) {
-            flywheelPower = flywheelFixedSpeed;
-        }
-        lastA = a;
+        // Intake / Transfer
+        manageIntake();
 
-        double up = gamepad2.right_trigger;
-        double down = gamepad2.left_trigger;
+        // Gate
+        manageGate();
 
-        if (up > 0.05) flywheelPower += flywheelStep * up;
-        if (down > 0.05) flywheelPower -= flywheelStep * down;
+        // Ramp
+        manageRamp();
 
-        flywheelPower = Range.clip(flywheelPower, 0.0, 1.0);
-
-        FlyL.setPower(flywheelPower);
-        FlyR.setPower(flywheelPower);
-
-
-        boolean dUp = gamepad2.dpad_up;
-        boolean dDown = gamepad2.dpad_down;
-
-        if (dUp && !lastDpadUp) {
-            rampPos += rampStep;
-        }
-        if (dDown && !lastDpadDown) {
-            rampPos -= rampStep;
         }
 
-        lastDpadUp = dUp;
-        lastDpadDown = dDown;
+        void manageLauncher() {
+            if (gamepad2.a && !lastA2) {
+                flywheelOn = !flywheelOn;
+            }
+            lastA2 = gamepad2.a;
 
-        rampPos = Range.clip(rampPos, 0.0, 1.0);
-        //Ramp.setPosition(rampPos);
 
+            double up = gamepad2.right_trigger;
+            double down = gamepad2.left_trigger;
 
-        ///  Misha Edit: press x -- turn intake motors on, press x again -- turn intake motors off
+            if (up > 0.05) flywheelPower += flywheelStep * up;
+            if (down > 0.05) flywheelPower -= flywheelStep * down;
 
-        boolean xPressed;
-        xPressed = gamepad2.x;
+            flywheelPower = Range.clip(flywheelPower, 0.0, 1.0);
+            telemetry.addData("Flywheel Power:", flywheelPower);
 
-        //// This code should work after re-coding servos to continually rotate like motor.
-        /// Note on how to use servos:
-        /// servo.setDirection(Servo.Direction.FORWARD);
-        /// servo.setPosition(1.0);   // spins forward
-        /// servo.setPosition(0.5);   // stop --- may need to adjust value slightly
-        /// servo.setPosition(0.0);   // spins backward
-
-        ///Function to toggle spin between on/off
-
-        if (xPressed)
-        {
-            //intakeSpin = !intakeSpin;
-
-            //lastXpadPressed = xPressed;
-            IntakeBrushL.setPower(intakeRunSpeed);
-            IntakeBrushR.setPower(intakeRunSpeed);
-            TransferL.setPower(intakeRunSpeed);
-            TransferR.setPower(intakeRunSpeed);
-            //IntakeBandL.setPower(intakeRunspeed);
-            //IntakeBandR.setPower(intakeRunSpeed);
-        }
-        else
-        {
-            IntakeBrushL.setPower(intakeStopSpeed);
-            IntakeBrushR.setPower(intakeStopSpeed);
-            TransferL.setPower(intakeStopSpeed);
-            TransferR.setPower(intakeStopSpeed);
-            //IntakeBandL.setPosition(intakeStopSpeed);
-            //IntakeBandR.setPosition(intakeStopSpeed);
-        }
-
-        if (gamepad2.b) {
-            Ramp.setPosition(0);
-        }
-        else {
-            Ramp.setPosition(1);
+            if (flywheelOn) {
+                FlyL.setPower(flywheelPower);
+                FlyR.setPower(flywheelPower);
+            }
+            else {
+                FlyL.setPower(0);
+                FlyR.setPower(0);
+            }
         }
 
 
+        void manageIntake() {
+            if (gamepad2.x && !lastX2) {
+                intakeSpin = !intakeSpin;
+            }
+            lastX2 = gamepad2.x;
 
+            if (gamepad2.y && !lastY2) {
+                transferSpin = !transferSpin;
+            }
+
+            lastY2 = gamepad2.y;
+
+            if (intakeSpin) {
+                IntakeBrushL.setPower(intakeRunSpeed);
+                IntakeBrushR.setPower(intakeRunSpeed);
+            }
+            else {
+                IntakeBrushL.setPower(intakeStopSpeed);
+                IntakeBrushR.setPower(intakeStopSpeed);
+            }
+
+            if (transferSpin) {
+                TransferL.setPower(intakeRunSpeed);
+                TransferR.setPower(intakeRunSpeed);
+            }
+            else {
+                TransferL.setPower(intakeStopSpeed);
+                TransferR.setPower(intakeStopSpeed);
+            }
+        }
+
+        void manageGate() {
+            if(gamepad2.b) {
+                Gate.setPosition(gateDownPos);
+            }
+            else {
+                Gate.setPosition(gateUpPos);
+            }
+        }
+
+        void manageRamp() {
+            if(gamepad2.dpadDownWasPressed()) {
+                rampPos -= rampStep;
+            }
+            else if (gamepad2.dpadUpWasPressed()) {
+                rampPos += rampStep;
+            }
+            rampPos = Range.clip(rampPos, 0, 1);
+            // set ramp pos here - currently missing
+        }
+
+        void launch() {
+            // automate the launching procedure
         }
     }
 
