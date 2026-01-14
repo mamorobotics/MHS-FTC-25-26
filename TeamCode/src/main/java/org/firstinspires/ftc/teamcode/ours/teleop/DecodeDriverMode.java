@@ -4,25 +4,31 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 @ TeleOp(name = "DecodeTeleOp")
 public class DecodeDriverMode extends OpMode
 {
-    private static DcMotor FlyL, FlyR;
+    private static DcMotorEx FlyL, FlyR;
     private static CRServo IntakeBrushL, IntakeBrushR, TransferL, TransferR;
     private static Servo Gate;
     static DriveTrain driveTrain = new DriveTrain();
 
     // Flywheel:
 
-    private double flywheelPower = 0.0;          // current flywheel power [0..1]
-    private static final double flywheelStep = 0.02;  // how much triggers change per loop
+    private double flywheelSpeed = 0.0;          // current flywheel power [0..1]
+    private static final double flywheelStep = 300;  // how much triggers change per loop
+    private static final double smallFlywheelStep = 50; // how much change per loop
     private static final double flywheelFixedSpeed = 0.5;
+
+    private static double flywheelLeftSpeed = 0;
+    private static double flywheelRightSpeed = 0;
 
     private boolean flywheelOn = false;
 
@@ -44,18 +50,9 @@ public class DecodeDriverMode extends OpMode
 
     // Ramp:
 
-    private double rampPos = 0.5; // PLACEHOLDER - calibrate
     private double rampStep = 0.05; // PLACEHOLDER - calibrate
+    private double rampPos = 0.5; // PLACEHOLDER - calibrate
 
-
-    private boolean lastA2 = false;
-    private boolean lastX2 = false;
-    private boolean lastY2 = false;
-    private boolean lastB2 = false;
-
-//    private boolean lastDpadUp = false;
-//    private boolean lastDpadDown = false;
-//    private boolean lastA = false;
 //
 //    /// Misha Edit: adding boolean var -- intakeSpin: toggle on/off with x key
 //    /// Also, lastXpadDown -- if pressed: down, else: up
@@ -73,12 +70,14 @@ public class DecodeDriverMode extends OpMode
         driveTrain.setRunMode(DcMotor.RunMode.RUN_USING_ENCODER);
         driveTrain.reverse(DriveTrain.DriveTrainSide.LEFT);
 
-        FlyL = hardwareMap.get(DcMotor.class, "leftLauncher");
-        FlyR = hardwareMap.get(DcMotor.class, "rightLauncher");
-        FlyL.setDirection(DcMotor.Direction.FORWARD);
-        FlyR.setDirection(DcMotor.Direction.REVERSE);
+        FlyL = hardwareMap.get(DcMotorEx.class, "leftLauncher");
+        FlyR = hardwareMap.get(DcMotorEx.class, "rightLauncher");
+        FlyL.setDirection(DcMotor.Direction.REVERSE);
+        FlyR.setDirection(DcMotor.Direction.FORWARD);
         FlyL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         FlyR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        FlyL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        FlyR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         IntakeBrushL = hardwareMap.get(CRServo.class, "leftIntake");
         IntakeBrushR = hardwareMap.get(CRServo.class, "rightIntake");
@@ -129,43 +128,45 @@ public class DecodeDriverMode extends OpMode
         }
 
         void manageLauncher() {
-            if (gamepad2.a && !lastA2) {
+            if (gamepad2.aWasPressed()) {
                 flywheelOn = !flywheelOn;
             }
-            lastA2 = gamepad2.a;
+
+            if (gamepad2.dpadUpWasPressed()) flywheelSpeed += flywheelStep;
+            if (gamepad2.dpadDownWasPressed()) flywheelSpeed -= flywheelStep;
+            if (gamepad2.dpadRightWasPressed()) flywheelSpeed += smallFlywheelStep;
+            if (gamepad2.dpadLeftWasPressed()) flywheelSpeed -= smallFlywheelStep;
+
+            flywheelSpeed = Range.clip(flywheelSpeed, 0.0, 6000);
+            telemetry.addData("Flywheel Set Speed:", flywheelSpeed);
+            flywheelLeftSpeed = FlyL.getVelocity(AngleUnit.DEGREES) / 60; // divide by 60 bc: divide degrees / 360 to get rotations, but * 60 to get per minute
+            flywheelRightSpeed = FlyR.getVelocity(AngleUnit.DEGREES) / 60; // divide by 60 bc: divide degrees / 360 to get rotations, but * 60 to get per minute
+
+            telemetry.addData("Left Flywheel Speed: ", flywheelLeftSpeed);
+            telemetry.addData("Right Flywheel Speed: ", flywheelRightSpeed);
 
 
-            double up = gamepad2.right_trigger;
-            double down = gamepad2.left_trigger;
-
-            if (up > 0.05) flywheelPower += flywheelStep * up;
-            if (down > 0.05) flywheelPower -= flywheelStep * down;
-
-            flywheelPower = Range.clip(flywheelPower, 0.0, 1.0);
-            telemetry.addData("Flywheel Power:", flywheelPower);
 
             if (flywheelOn) {
-                FlyL.setPower(flywheelPower);
-                FlyR.setPower(flywheelPower);
+                FlyL.setVelocity(flywheelSpeed * 60, AngleUnit.DEGREES); // multiply rpms by 360 to get degrees per min, divide by 60 to get per second
+                FlyR.setVelocity(flywheelSpeed * 60, AngleUnit.DEGREES); // multiply rpms by 360 to get degrees per min, divide by 60 to get per second
             }
             else {
-                FlyL.setPower(0);
-                FlyR.setPower(0);
+                FlyL.setVelocity(0);
+                FlyR.setVelocity(0);
             }
         }
 
 
         void manageIntake() {
-            if (gamepad2.x && !lastX2) {
+            if (gamepad2.xWasPressed()) {
                 intakeSpin = !intakeSpin;
             }
-            lastX2 = gamepad2.x;
 
-            if (gamepad2.y && !lastY2) {
+            if (gamepad2.yWasPressed()) {
                 transferSpin = !transferSpin;
             }
 
-            lastY2 = gamepad2.y;
 
             if (intakeSpin) {
                 IntakeBrushL.setPower(intakeRunSpeed);
