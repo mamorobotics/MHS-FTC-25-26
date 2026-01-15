@@ -42,7 +42,7 @@ public class DecodeDriverMode extends OpMode
 
     // Gate:
     private static final double gateDownPos = 0.01;
-    private static final double gateUpPos = 0.03;
+    private static final double gateUpPos = 0.04;
     private boolean gateUp = false; // currently not used
     private static final double gateStep = 0.005; // only for testing / calibration
     private static final double gatePos = 0.01; // only for testing / calibration
@@ -137,19 +137,20 @@ public class DecodeDriverMode extends OpMode
             if (gamepad2.dpadRightWasPressed()) flywheelSpeed += smallFlywheelStep;
             if (gamepad2.dpadLeftWasPressed()) flywheelSpeed -= smallFlywheelStep;
 
-            flywheelSpeed = Range.clip(flywheelSpeed, 0.0, 6000);
+            flywheelSpeed = Range.clip(flywheelSpeed, 0.0, 3000);
             telemetry.addData("Flywheel Set Speed:", flywheelSpeed);
-            flywheelLeftSpeed = FlyL.getVelocity(AngleUnit.DEGREES) / 60; // divide by 60 bc: divide degrees / 360 to get rotations, but * 60 to get per minute
-            flywheelRightSpeed = FlyR.getVelocity(AngleUnit.DEGREES) / 60; // divide by 60 bc: divide degrees / 360 to get rotations, but * 60 to get per minute
-
+            flywheelLeftSpeed = FlyL.getVelocity(); // divide by 60 bc: divide degrees / 360 to get rotations, but * 60 to get per minute
+            flywheelRightSpeed = FlyR.getVelocity(); // divide by 60 bc: divide degrees / 360 to get rotations, but * 60 to get per minute
             telemetry.addData("Left Flywheel Speed: ", flywheelLeftSpeed);
             telemetry.addData("Right Flywheel Speed: ", flywheelRightSpeed);
 
 
 
             if (flywheelOn) {
-                FlyL.setVelocity(flywheelSpeed * 60, AngleUnit.DEGREES); // multiply rpms by 360 to get degrees per min, divide by 60 to get per second
-                FlyR.setVelocity(flywheelSpeed * 60, AngleUnit.DEGREES); // multiply rpms by 360 to get degrees per min, divide by 60 to get per second
+                FlyL.setVelocity(flywheelSpeed);
+                FlyR.setVelocity(flywheelSpeed);
+//                FlyL.setVelocity(flywheelSpeed * 60, AngleUnit.DEGREES); // multiply rpms by 360 to get degrees per min, divide by 60 to get per second
+//                FlyR.setVelocity(flywheelSpeed * 60, AngleUnit.DEGREES); // multiply rpms by 360 to get degrees per min, divide by 60 to get per second
             }
             else {
                 FlyL.setVelocity(0);
