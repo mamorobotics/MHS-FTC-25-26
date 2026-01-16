@@ -4,6 +4,8 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
+import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
+import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 @TeleOp(name = "testDriving")
 public class TestDriving extends OpMode {
@@ -11,6 +13,9 @@ public class TestDriving extends OpMode {
     private DriveTrain driveTrain = new DriveTrain();
 
     private double motorPower = 0.2;
+
+    private AprilTagProcessor aprilTag;
+    private VisionPortal visionPortal;
 
     private Servo gate;
 
@@ -28,6 +33,9 @@ public class TestDriving extends OpMode {
         driveTrain.setRunMode(DcMotor.RunMode.RUN_USING_ENCODER);
         driveTrain.reverse(DriveTrain.DriveTrainSide.LEFT);
 
+        aprilTag = AprilTagProcessor.easyCreateWithDefaults();
+        visionPortal = VisionPortal.easyCreateWithDefaults(hardwareMap.get(WebcamName.class, "Webcam 1"), aprilTag);
+
         gate = hardwareMap.get(Servo.class, "gate");
     }
 
@@ -35,16 +43,32 @@ public class TestDriving extends OpMode {
     @Override
     public void loop () {
         if (gamepad1.a) {
-            DriveTrain.FL.setPower(motorPower);
-            DriveTrain.BL.setPower(motorPower);
-            DriveTrain.FR.setPower(motorPower);
-            DriveTrain.BR.setPower(motorPower);
+            driveTrain.FL.setPower(motorPower);
+            driveTrain.BL.setPower(motorPower);
+            driveTrain.FR.setPower(motorPower);
+            driveTrain.BR.setPower(motorPower);
         }
         else {
-            DriveTrain.FL.setPower(0);
-            DriveTrain.BL.setPower(0);
-            DriveTrain.FR.setPower(0);
-            DriveTrain.BR.setPower(0);
+            driveTrain.FL.setPower(0);
+            driveTrain.BL.setPower(0);
+            driveTrain.FR.setPower(0);
+            driveTrain.BR.setPower(0);
+        }
+
+        if (gamepad1.b) {
+            visionPortal.resumeStreaming();
+
+            if (aprilTag.getDetections().size() > 0) {
+                AprilTagDetection detection = aprilTag.getDetections()[0];
+                double bearing = detection.ftcPose.bearing;
+
+                double rotationSpeed = Math.clamp(-1 * bearing / 90.0, 0, 1);
+
+                driveTrain.move(0, 0, rotationSpeed, 1);
+            }
+        } else
+        {
+            visionPortal.stopStreaming();
         }
 
         if (gamepad2.aWasPressed()) {
