@@ -62,7 +62,8 @@ public class TestDriving extends OpMode {
                 AprilTagDetection detection = aprilTag.getDetections()[0];
                 double bearing = detection.ftcPose.bearing;
 
-                double rotationSpeed = Math.clamp(-1 * bearing / 90.0, 0, 1);
+                double NormalizedRotationSpeed = Math.clamp(-1 * bearing / 90.0, 0, 1);
+                double rotationSpeed = Math.pow(Math.sin((NormalizedRotationSpeed - 1) * 1.5707963268), 3) + 1
 
                 driveTrain.move(0, 0, rotationSpeed, 1);
             }
