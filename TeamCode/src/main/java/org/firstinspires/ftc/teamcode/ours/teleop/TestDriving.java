@@ -63,7 +63,7 @@ public class TestDriving extends OpMode {
                 double bearing = detection.ftcPose.bearing;
 
                 double NormalizedRotationSpeed = Math.clamp(-1 * bearing / 90.0, 0, 1);
-                double rotationSpeed = Math.pow(Math.sin((NormalizedRotationSpeed - 1) * 1.5707963268), 3) + 1
+                double rotationSpeed = Math.pow(Math.sin(NormalizedRotationSpeed * 1.5707963268), 5);
 
                 driveTrain.move(0, 0, rotationSpeed, 1);
             }
