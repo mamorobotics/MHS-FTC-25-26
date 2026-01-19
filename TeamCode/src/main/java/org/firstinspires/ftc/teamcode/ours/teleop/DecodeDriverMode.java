@@ -65,7 +65,7 @@ public class DecodeDriverMode extends OpMode
     @Override
     public void init()
     {
-        driveTrain.setDriveTrain(hardwareMap, "frontLeft", "backLeft", "frontRight", "backRight");
+        driveTrain.setDriveTrain(hardwareMap, "leftFront", "leftBack", "rightFront", "rightBack");
         driveTrain.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         driveTrain.setRunMode(DcMotor.RunMode.RUN_USING_ENCODER);
         driveTrain.reverse(DriveTrain.DriveTrainSide.LEFT);
