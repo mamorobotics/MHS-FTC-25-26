@@ -10,7 +10,9 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 
 
+
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.teamcode.ours.BotConstants;
 
 @ TeleOp(name = "DecodeTeleOp")
 public class DecodeDriverMode extends OpMode
@@ -78,6 +80,9 @@ public class DecodeDriverMode extends OpMode
         FlyR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         FlyL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         FlyR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        FlyL.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, BotConstants.flywheelCoefficients);
+        FlyR.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, BotConstants.flywheelCoefficients);
 
         IntakeBrushL = hardwareMap.get(CRServo.class, "leftIntake");
         IntakeBrushR = hardwareMap.get(CRServo.class, "rightIntake");
