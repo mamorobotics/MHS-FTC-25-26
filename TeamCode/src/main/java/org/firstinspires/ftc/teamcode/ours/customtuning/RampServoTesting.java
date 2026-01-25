@@ -50,13 +50,15 @@ public class RampServoTesting extends OpMode {
             rampL.setPosition(curPosition);
             telemetry.addData("Position", curPosition);
         }
-        
+
         if (gamepad1.dpadDownWasPressed()) {
             curPosition -= 0.02;
             rampR.setPosition(curPosition);
             rampL.setPosition(curPosition);
             telemetry.addData("Position", curPosition);
         }
+
+        telemetry.addData("Position", curPosition);
 
 
     }

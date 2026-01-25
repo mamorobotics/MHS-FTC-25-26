@@ -19,7 +19,7 @@ public class DecodeDriverMode extends OpMode
 {
     private static DcMotorEx FlyL, FlyR;
     private static CRServo IntakeBrushL, IntakeBrushR, TransferL, TransferR;
-    private static Servo Gate;
+    private static Servo Gate, RampL, RampR;
     static DriveTrain driveTrain = new DriveTrain();
 
     // Flywheel:
@@ -49,11 +49,16 @@ public class DecodeDriverMode extends OpMode
     private static final double gateStep = 0.005; // only for testing / calibration
     private static final double gatePos = 0.01; // only for testing / calibration
 
+    private static double rampPos = 0.38;
+
+    private static final double rampStep = 0.01;
+
+
 
     // Ramp:
 
-    private double rampStep = 0.05; // PLACEHOLDER - calibrate
-    private double rampPos = 0.5; // PLACEHOLDER - calibrate
+
+
 
 //
 //    /// Misha Edit: adding boolean var -- intakeSpin: toggle on/off with x key
@@ -96,6 +101,11 @@ public class DecodeDriverMode extends OpMode
 
         Gate = hardwareMap.get(Servo.class, "gate");
         Gate.setPosition(gateDownPos);
+
+        RampR = hardwareMap.get(Servo.class, "rightRamp");
+        RampL = hardwareMap.get(Servo.class, "leftRamp");
+
+        RampL.setDirection(Servo.Direction.REVERSE);
 
         telemetry.addLine("TeleOp Initialized");
         telemetry.update();
@@ -203,14 +213,21 @@ public class DecodeDriverMode extends OpMode
         }
 
         void manageRamp() {
-            if(gamepad2.dpadDownWasPressed()) {
+            if(gamepad2.rightBumperWasPressed()) {
                 rampPos -= rampStep;
             }
-            else if (gamepad2.dpadUpWasPressed()) {
+            else if (gamepad2.leftBumperWasPressed()) {
                 rampPos += rampStep;
             }
             rampPos = Range.clip(rampPos, 0, 1);
+
+            telemetry.addData("Ramp Position", rampPos);
+
+            RampR.setPosition(rampPos);
+            RampL.setPosition(rampPos);
             // set ramp pos here - currently missing
+
+
         }
 
         void launch() {
