@@ -19,6 +19,10 @@ public class blueClose {
     public static void main(String[] args) {
         MeepMeep meepMeep = new MeepMeep(600);
         Vector2d shootingPos = new Vector2d(-6,6);
+        Vector2d closeRow = new Vector2d(-12,-30);
+        Vector2d middleRow = new Vector2d(12,-30);
+        Vector2d farRow = new Vector2d(37,-30);
+
 
         RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
@@ -27,28 +31,29 @@ public class blueClose {
 
         myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(-60, -34, Math.toRadians(90)))
                         .splineTo(new Vector2d(-12,-10), Math.toRadians(180))
-                //SCAN APRIL TAG HERE
+                        //SCAN APRIL TAG HERE
                         .waitSeconds(1)
                         .turn(Math.toRadians(90))
-                .lineToY(-38)
-                //INTAKE HERE
+                        .lineToY(-30)
+                        //INTAKE ACTION HERE
                         .waitSeconds(1)
-                                .splineTo(shootingPos, Math.toRadians(225))
+                        .turn(Math.toRadians(-45))
+                        .strafeTo(shootingPos)
                         //SHOOT BALLS HERE
                         .waitSeconds(1)
                         .turn(Math.toRadians(45))
-                        .splineTo(new Vector2d(12,-38), Math.toRadians(270))
-                        //INTAKE HERE
+                        .splineTo(middleRow, Math.toRadians(270))
+                        //INTAKE ACTION HERE
                         .waitSeconds(1)
-                        .turn(Math.toRadians(180))
-                        .splineTo(shootingPos, Math.toRadians(225))
+                        .turn(Math.toRadians(-45))
+                        .strafeTo(shootingPos)
                         //SHOOT BALLS HERE
                         .waitSeconds(1)
-                        .splineTo(new Vector2d(37, -38), Math.toRadians(270))
-                        //INTAKE HERE
+                        .splineTo(farRow, Math.toRadians(270))
+                        //INTAKE ACTION HERE
                         .waitSeconds(1)
-                        .turn(Math.toRadians(180))
-                        .splineTo(shootingPos, Math.toRadians(225))
+                        .turn(Math.toRadians(-45))
+                        .strafeTo(shootingPos)
                         //SHOOT BALLS HERE
                         .waitSeconds(1)
                         .turn(Math.toRadians(135))
