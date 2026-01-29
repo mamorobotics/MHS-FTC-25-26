@@ -15,7 +15,7 @@ import java.awt.Image;
 import java.io.File;
 import java.io.IOException;
 
-public class blueClose {
+public class blueFar {
     public static void main(String[] args) {
         MeepMeep meepMeep = new MeepMeep(600);
         Vector2d shootingPos = new Vector2d(-6,6);
@@ -29,35 +29,29 @@ public class blueClose {
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
                 .build();
 
-        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(-60, -34, Math.toRadians(90)))
-                        .splineTo(new Vector2d(-12,-10), Math.toRadians(180))
-                        //SCAN APRIL TAG HERE
+        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(60, -10, Math.toRadians(180)))
+                //SCAN AT START
                         .waitSeconds(1)
-                        .turn(Math.toRadians(90))
-                        .lineToY(-30)
-                        //INTAKE ACTION HERE
-                        .waitSeconds(1)
+                .splineTo(farRow, Math.toRadians(270))
                         .turn(Math.toRadians(-45))
                         .strafeTo(shootingPos)
-                        //SHOOT BALLS HERE
-                        .waitSeconds(1)
-                        .turn(Math.toRadians(45))
-                        .splineTo(middleRow, Math.toRadians(270))
-                        //INTAKE ACTION HERE
-                        .waitSeconds(1)
-                        .turn(Math.toRadians(-45))
-                        .strafeTo(shootingPos)
-                        //SHOOT BALLS HERE
-                        .waitSeconds(1)
-                        .splineTo(farRow, Math.toRadians(270))
-                        //INTAKE ACTION HERE
-                        .waitSeconds(1)
-                        .turn(Math.toRadians(-45))
-                        .strafeTo(shootingPos)
-                        //SHOOT BALLS HERE
+                //SHOOT HERE
                         .waitSeconds(1)
                         .turn(Math.toRadians(135))
-                        .lineToX(12)
+                        .splineTo(middleRow,Math.toRadians(270))
+                        .waitSeconds(1)
+                        .turn(Math.toRadians(-45))
+                        .strafeTo(shootingPos)
+                //SHOOT HERE
+                        .waitSeconds(1)
+                        .turn(Math.toRadians(45))
+                        .splineTo(closeRow,Math.toRadians(270))
+                        .waitSeconds(1)
+                        .turn(Math.toRadians(-45))
+                        .strafeTo(shootingPos)
+                //SHOOT HERE
+
+
 
                 .build());
 
@@ -72,7 +66,7 @@ public class blueClose {
 //
 //
 //        meepMeep.setBackground(img)
-      meepMeep.setBackground(MeepMeep.Background.FIELD_DECODE_JUICE_DARK)
+        meepMeep.setBackground(MeepMeep.Background.FIELD_DECODE_JUICE_DARK)
                 .setDarkMode(true)
                 .setBackgroundAlpha(0.95f)
                 .addEntity(myBot)
