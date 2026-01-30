@@ -62,13 +62,14 @@ public class blueClose extends LinearOpMode {
 
 
         Action seq1 = drive.actionBuilder(startPose)
-                .splineTo(new Vector2d(-12, -10), Math.toRadians(180))
-
+                .strafeToLinearHeading(shootingPos, Math.toRadians(225))
                 //SCAN APRIL TAG HERE
                 .waitSeconds(1)
+                .build();
 
-                .turn(Math.toRadians(90))
-                .lineToY(-30)
+        //SHOOT
+        Action seq12 = drive.actionBuilder(shootingPose)
+                .strafeToLinearHeading(closeRow, Math.toRadians(270))
                 .build();
 
         //INTAKE
@@ -104,7 +105,9 @@ public class blueClose extends LinearOpMode {
 
         Actions.runBlocking(new SequentialAction(
                 seq1,
-                //intake
+                //SHOOT
+                seq12,
+                //INTAKE
                 seq2,
                 //shoot
                 seq3,
@@ -123,14 +126,14 @@ public class blueClose extends LinearOpMode {
 
 //        drive.followTrajectorySequence(blueClose);
 
-        Action trajectoryChosen = blueClose.build();
+/*        Action trajectoryChosen = blueClose.build();
 
         Actions.runBlocking(
             new SequentialAction(
                     trajectoryChosen
             )
         );
-
+*/
         while (opModeIsActive()) {
             idle();
         }
