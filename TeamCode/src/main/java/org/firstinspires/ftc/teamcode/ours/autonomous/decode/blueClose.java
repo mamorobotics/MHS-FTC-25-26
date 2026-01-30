@@ -48,10 +48,10 @@ public class blueClose extends LinearOpMode {
         telemetry.update();
 
         Pose2d startPose = new Pose2d(-60, -34, Math.toRadians(90));
-        Pose2d shootingPose = new Pose2d(-6, 6, Math.toRadians(180));
-        Pose2d closeRowPose = new Pose2d(-12, -30, Math.toRadians(180));
-        Pose2d middleRowPose = new Pose2d(12, -30, Math.toRadians(180));
-        Pose2d farRowPose = new Pose2d(37, -30, Math.toRadians(180));
+        Pose2d shootingPose = new Pose2d(-6, 6, Math.toRadians(225));
+        Pose2d closeRowPose = new Pose2d(-12, -30, Math.toRadians(270));
+        Pose2d middleRowPose = new Pose2d(12, -30, Math.toRadians(270));
+        Pose2d farRowPose = new Pose2d(37, -30, Math.toRadians(270));
 
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
 
@@ -75,9 +75,11 @@ public class blueClose extends LinearOpMode {
 
         //INTAKE
 
-        Action seqIntakeForward1 = ; // FILL THIS PART IN
+        Action seqIntakeForward1 = drive.actionBuilder(closeRowPose)
+                .lineToY(-52)
+                .build(); // FILL THIS PART IN
 
-        Action seq2 = drive.actionBuilder(closeRowPose)
+        Action seq2 = drive.actionBuilder(new Pose2d(-12,-52,Math.toRadians(270)))
                 .turn(Math.toRadians(-45))
                 .strafeTo(shootingPos)
                 .build();
@@ -91,9 +93,11 @@ public class blueClose extends LinearOpMode {
 
         //INTAKE
 
-        Action seqIntakeForward2 = ; // FILL THIS PART IN
+        Action seqIntakeForward2 = drive.actionBuilder(middleRowPose)
+                .lineToY(-52)
+                .build(); // FILL THIS PART IN; // FILL THIS PART IN
 
-        Action seq4 = drive.actionBuilder(middleRowPose)
+        Action seq4 = drive.actionBuilder(new Pose2d(12,-52,Math.toRadians(270)))
                 .turn(Math.toRadians(-45))
                 .strafeTo(shootingPos)
                 .build();
