@@ -4,6 +4,7 @@ import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
+import com.qualcomm.hardware.bosch.BNO055Util;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.Range;
 
@@ -33,7 +34,7 @@ public class Subsystems {
         gateRamp = new GateRamp(hardwareMap);
     }
 
-    public Action Initialize() {
+    public Action initialize() {
         // reset everything imo at autonmous start ig
         return new ParallelAction(
                 intake.intakeStop(),
@@ -42,6 +43,8 @@ public class Subsystems {
                 gateRamp.rampMove(BotConstants.RAMP_NEUTRAL_POS)
         );
     }
+
+
 
     public Action Intake() {
         return intake.intakeRun(pickIntakeSpeed, pickTransferSpeed);
