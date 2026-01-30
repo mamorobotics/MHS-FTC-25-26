@@ -29,10 +29,10 @@ public class blueFar {
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
                 .build();
 
-        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(60, -10, Math.toRadians(180)))
+        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(61, -15.3333, Math.toRadians(180)))
                 //SCAN AT START
                         .waitSeconds(1)
-                .splineTo(farRow, Math.toRadians(270))
+                .strafeTo(farRow, Math.toRadians(270))
                         .turn(Math.toRadians(-45))
                         .strafeTo(shootingPos)
                 //SHOOT HERE
