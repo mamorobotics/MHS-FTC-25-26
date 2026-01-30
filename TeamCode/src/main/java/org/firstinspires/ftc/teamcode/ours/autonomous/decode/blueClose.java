@@ -104,6 +104,13 @@ public class blueClose extends LinearOpMode {
         telemetry.update();
 
         Pose2d startPose = new Pose2d(-60, -34, Math.toRadians(90));
+        Pose2d shootingPose = new Pose2d(-6, 6, Math.toRadians(180));
+        Pose2d closeRowPose = new Pose2d(-12, -30, Math.toRadians(180));
+        Pose2d middleRowPose = new Pose2d(12, -30, Math.toRadians(180));
+        Pose2d farRowPose = new Pose2d(37, -30, Math.toRadians(180));
+
+
+
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
 
 
@@ -116,7 +123,7 @@ public class blueClose extends LinearOpMode {
         // this is deprecated
 //        drive.setPoseEstimate(startPose);
 
-        TrajectoryActionBuilder blueClose = drive.actionBuilder(startPose)
+        Action seq1 = drive.actionBuilder(startPose)
                 .splineTo(new Vector2d(-12, -10), Math.toRadians(180))
 
                 //SCAN APRIL TAG HERE
@@ -124,42 +131,49 @@ public class blueClose extends LinearOpMode {
 
                 .turn(Math.toRadians(90))
                 .lineToY(-30)
+                .build();
 
-                //INTAKE ACTION HERE
-                .waitSeconds(1)
+        //INTAKE
 
+        Action seq2 = drive.actionBuilder(closeRowPose)
                 .turn(Math.toRadians(-45))
                 .strafeTo(shootingPos)
+                .build();
 
-                //SHOOT BALLS HERE
-                .waitSeconds(1)
+        //SHOOT
 
+        Action seq3 = drive.actionBuilder(shootingPose)
                 .turn(Math.toRadians(45))
                 .splineTo(middleRow, Math.toRadians(270))
+                .build();
 
-                //INTAKE ACTION HERE
-                .waitSeconds(1)
+        //INTAKE
 
+        Action seq4 = drive.actionBuilder(middleRowPose)
                 .turn(Math.toRadians(-45))
                 .strafeTo(shootingPos)
+                .build();
 
-                //SHOOT BALLS HERE
-                .waitSeconds(1)
+        //SHOOT
 
-                .splineTo(farRow, Math.toRadians(270))
+        //Action seq5 = drive.actionBuilder(shootingPose)
+          //      .splineTo(farRow, Math.toRadians(270))
+          //      .build();
 
-                //INTAKE ACTION HERE
-                .waitSeconds(1)
+        //INTAKE
 
-                .turn(Math.toRadians(-45))
-                .strafeTo(shootingPos)
+        //TrajectoryActionBuilder blueClose = drive.actionBuilder(startPose)
 
-                //SHOOT BALLS HERE
-                .waitSeconds(1)
-
-                .turn(Math.toRadians(135))
-                .lineToX(12);
-
+        Actions.runBlocking(new SequentialAction(
+                seq1,
+                //intake
+                seq2,
+                //shoot
+                seq3,
+                //intake
+                seq4
+                //shoot
+        ));
 
         while (!isStarted() && !isStopRequested()) {
 
