@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.ours.autonomous.decode;
 
 import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;      // RR 0.5.x geometry
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
@@ -74,6 +75,8 @@ public class blueClose extends LinearOpMode {
 
         //INTAKE
 
+        Action seqIntakeForward1 = ; // FILL THIS PART IN
+
         Action seq2 = drive.actionBuilder(closeRowPose)
                 .turn(Math.toRadians(-45))
                 .strafeTo(shootingPos)
@@ -87,6 +90,8 @@ public class blueClose extends LinearOpMode {
                 .build();
 
         //INTAKE
+
+        Action seqIntakeForward2 = ; // FILL THIS PART IN
 
         Action seq4 = drive.actionBuilder(middleRowPose)
                 .turn(Math.toRadians(-45))
@@ -105,15 +110,21 @@ public class blueClose extends LinearOpMode {
 
         Actions.runBlocking(new SequentialAction(
                 seq1,
-                //SHOOT
+                subsystems.LaunchAll(shootingPose),
                 seq12,
-                //INTAKE
+                new ParallelAction(
+                        subsystems.Intake(),
+                        seqIntakeForward1
+                ),
                 seq2,
-                //shoot
+                subsystems.LaunchAll(shootingPose),
                 seq3,
-                //intake
-                seq4
-                //shoot
+                new ParallelAction(
+                        subsystems.Intake(),
+                        seqIntakeForward2
+                ),
+                seq4,
+                subsystems.LaunchAll(shootingPose)
         ));
 
         while (!isStarted() && !isStopRequested()) {
