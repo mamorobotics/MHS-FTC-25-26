@@ -1,7 +1,11 @@
 package org.firstinspires.ftc.teamcode.ours.autonomous.decode;
 
-import com.acmerobotics.roadrunner.geometry.Pose2d;      // RR 0.5.x geometry
-import com.acmerobotics.roadrunner.geometry.Vector2d;    // RR 0.5.x geometry
+import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.Pose2d;      // RR 0.5.x geometry
+import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
+import com.acmerobotics.roadrunner.Vector2d;    // RR 0.5.x geometry
+import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -14,13 +18,12 @@ import org.firstinspires.ftc.teamcode.ours.BotConstants;
 
 
 
-import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.ours.drive.MecanumDrive;
 import org.firstinspires.ftc.teamcode.ours.teleop.DriveTrain;
-import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 
 
 @Autonomous(name = "Blue Close Decode")
-public class BlueClose extends LinearOpMode {
+public class blueClose extends LinearOpMode {
 
     private static DcMotorEx FlyL, FlyR;
     private static CRServo IntakeBrushL, IntakeBrushR, TransferL, TransferR;
@@ -100,18 +103,20 @@ public class BlueClose extends LinearOpMode {
         telemetry.addLine("Autonomous Initialized");
         telemetry.update();
 
-        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
-
         Pose2d startPose = new Pose2d(-60, -34, Math.toRadians(90));
+        MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
+
+
 
         Vector2d shootingPos = new Vector2d(-6, 6);
         Vector2d closeRow   = new Vector2d(-12, -30);
         Vector2d middleRow  = new Vector2d(12, -30);
         Vector2d farRow     = new Vector2d(37, -30);
 
-        drive.setPoseEstimate(startPose);
+        // this is deprecated
+//        drive.setPoseEstimate(startPose);
 
-        TrajectorySequence blueClose = drive.trajectorySequenceBuilder(startPose)
+        TrajectoryActionBuilder blueClose = drive.actionBuilder(startPose)
                 .splineTo(new Vector2d(-12, -10), Math.toRadians(180))
 
                 //SCAN APRIL TAG HERE
@@ -153,9 +158,8 @@ public class BlueClose extends LinearOpMode {
                 .waitSeconds(1)
 
                 .turn(Math.toRadians(135))
-                .lineToX(12)
+                .lineToX(12);
 
-                .build();
 
         while (!isStarted() && !isStopRequested()) {
 
@@ -165,7 +169,15 @@ public class BlueClose extends LinearOpMode {
 
         if (isStopRequested()) return;
 
-        drive.followTrajectorySequence(blueClose);
+//        drive.followTrajectorySequence(blueClose);
+
+        Action trajectoryChosen = blueClose.build();
+
+        Actions.runBlocking(
+            new SequentialAction(
+                    trajectoryChosen
+            )
+        );
 
         while (opModeIsActive()) {
             idle();
