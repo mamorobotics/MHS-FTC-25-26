@@ -10,4 +10,12 @@ public class BotConstants {
 
     public static PIDFCoefficients flywheelCoefficients = new PIDFCoefficients(FlywheelKP, FlywheelKI, FlywheelKD, FlywheelKF);
 
+    public static double LAUNCH_AMPS = 2.5;
+
+    public static double RAMP_NEUTRAL_POS = 0.38;
+
+    public static double GATE_UP_POS = 0.04;
+
+    public static double GATE_DOWN_POS = 0.01;
+
 }
