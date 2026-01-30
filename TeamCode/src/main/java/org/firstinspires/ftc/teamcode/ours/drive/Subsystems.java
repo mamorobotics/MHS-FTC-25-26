@@ -98,21 +98,75 @@ public class Subsystems {
 
     public double PoseFlywheelSpeed(Pose2d pose) {
         // fill in with functionality
-        double x = pose.position.x;
-        double y = pose.position.y;
+        double distance = PoseGoalDistance(pose);
         double value = 1000;
+
+        if (PoseIsFar(pose)) {
+            value = DistanceFarSpeed(distance);
+        }
+        else {
+            value = DistanceCloseSpeed(distance);
+        }
+
         return Range.clip(value, 0, 3000);
     }
 
     public double PoseRampPosition(Pose2d pose) {
         // fill in with functionality
-        double x = pose.position.x;
-        double y = pose.position.y;
-
+        double distance = PoseGoalDistance(pose);
         double value = 0.38;
+
+        if (PoseIsFar(pose)) {
+            value = DistanceFarRamp(distance);
+        }
+        else {
+            value = DistanceCloseRamp(distance);
+        }
 
         return Range.clip(value, 0.35, 0.46);
     }
+
+
+    public double PoseGoalDistance(Pose2d pose) {
+        double x_comp = pose.position.x - BotConstants.GOAL_X;
+        double y_comp = pose.position.y - BotConstants.GOAL_Y;
+
+        return Math.sqrt(Math.pow(x_comp, 2) + Math.pow(y_comp, 2));
+    }
+
+    public boolean PoseIsFar(Pose2d pose) {
+        return pose.position.x > 20;
+    }
+
+    public double DistanceCloseSpeed(double distance) {
+        double m = -3.535533906;
+        double b = 1235;
+
+        return m * distance + b;
+    }
+
+    public double DistanceCloseRamp(double distance) {
+        double m = -0.0007071067812;
+        double b = 0.437;
+
+        return m * distance + b;
+    }
+
+    public double DistanceFarSpeed(double distance) {
+        double m = 0;
+        double b = 1100;
+
+        return m * distance + b;
+    }
+
+    public double DistanceFarRamp(double distance) {
+        double m = 0;
+        double b = 0.38;
+
+        return m * distance + b;
+    }
+
+
 
 
 }
