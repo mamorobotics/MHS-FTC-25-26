@@ -12,6 +12,7 @@ import com.qualcomm.robotcore.util.Range;
 
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.ours.BotConstants;
 
 @ TeleOp(name = "DecodeTeleOp")
@@ -38,18 +39,19 @@ public class DecodeDriverMode extends OpMode
 
     private boolean intakeSpin = false;
     private boolean transferSpin = false;
+
+    private boolean gateUp = false;
     private static final double intakeStopSpeed = 0;
     private static final double intakeRunSpeed = 0.4;
 
 
     // Gate:
-    private static final double gateDownPos = 0.01;
-    private static final double gateUpPos = 0.04;
-    private boolean gateUp = false; // currently not used
+    private static final double gateDownPos = BotConstants.GATE_DOWN_POS;
+    private static final double gateUpPos = BotConstants.GATE_UP_POS;
     private static final double gateStep = 0.005; // only for testing / calibration
     private static final double gatePos = 0.01; // only for testing / calibration
 
-    private static double rampPos = 0.38;
+    private static double rampPos = BotConstants.RAMP_NEUTRAL_POS;
 
     private static final double rampStep = 0.01;
 
@@ -159,6 +161,8 @@ public class DecodeDriverMode extends OpMode
             telemetry.addData("Left Flywheel Speed: ", flywheelLeftSpeed);
             telemetry.addData("Right Flywheel Speed: ", flywheelRightSpeed);
 
+            telemetry.addData("Left Flywheel Amperage:", FlyL.getCurrent(CurrentUnit.AMPS));
+
 
 
             if (flywheelOn) {
@@ -204,11 +208,15 @@ public class DecodeDriverMode extends OpMode
         }
 
         void manageGate() {
-            if(gamepad2.b) {
-                Gate.setPosition(gateDownPos);
-            }
-            else {
-                Gate.setPosition(gateUpPos);
+            if(gamepad2.bWasPressed()) {
+                gateUp = !gateUp;
+
+                if(gateUp) {
+                    Gate.setPosition(gateUpPos);
+                }
+                else {
+                    Gate.setPosition(gateDownPos);
+                }
             }
         }
 
