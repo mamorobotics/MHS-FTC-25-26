@@ -8,6 +8,10 @@ import com.acmerobotics.roadrunner.Vector2d;    // RR 0.5.x geometry
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 
@@ -17,20 +21,50 @@ import org.firstinspires.ftc.teamcode.ours.drive.Subsystems;
 import org.firstinspires.ftc.teamcode.ours.teleop.DriveTrain;
 
 
-@Autonomous(name = "Blue Far Decode")
+@Autonomous(name = "Red Far Decode")
 public class redFar extends LinearOpMode {
     static DriveTrain driveTrain = new DriveTrain();
-    private Subsystems subsystems;
     private static ElapsedTime stopwatch = new ElapsedTime();
+
+    private static DcMotorEx FlyL, FlyR;
+    private static CRServo IntakeBrushL, IntakeBrushR, TransferL, TransferR;
+    private static Servo Gate, RampL, RampR;
 
     // Flywheel:
 
     @Override
     public void runOpMode() throws InterruptedException {
-        Subsystems subsystems = new Subsystems(hardwareMap, telemetry);
+        FlyL = hardwareMap.get(DcMotorEx.class, "leftLauncher");
+        FlyR = hardwareMap.get(DcMotorEx.class, "rightLauncher");
+        FlyL.setDirection(DcMotor.Direction.REVERSE);
+        FlyR.setDirection(DcMotor.Direction.FORWARD);
+        FlyL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        FlyR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        FlyL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        FlyR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        subsystems.initialize();
+        FlyL.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, BotConstants.flywheelCoefficients);
+        FlyR.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, BotConstants.flywheelCoefficients);
 
+        IntakeBrushL = hardwareMap.get(CRServo.class, "leftIntake");
+        IntakeBrushR = hardwareMap.get(CRServo.class, "rightIntake");
+        IntakeBrushL.setDirection(CRServo.Direction.FORWARD);
+        IntakeBrushR.setDirection(CRServo.Direction.REVERSE);
+
+        TransferL = hardwareMap.get(CRServo.class, "leftTransfer");
+        TransferR = hardwareMap.get(CRServo.class, "rightTransfer");
+        TransferL.setDirection(CRServo.Direction.FORWARD);
+        TransferR.setDirection(CRServo.Direction.REVERSE);
+
+        Gate = hardwareMap.get(Servo.class, "gate");
+        Gate.setPosition(BotConstants.GATE_DOWN_POS);
+
+        RampR = hardwareMap.get(Servo.class, "rightRamp");
+        RampL = hardwareMap.get(Servo.class, "leftRamp");
+
+        RampL.setDirection(Servo.Direction.REVERSE);
+
+        startMechs();
 
         telemetry.addLine("Autonomous Initialized");
         telemetry.update();
@@ -51,7 +85,7 @@ public class redFar extends LinearOpMode {
 
 
         Action seq1 = drive.actionBuilder(startPose)
-                .strafeToLinearHeading(new Vector2d(56,13), Math.toRadians(152))
+                .strafeToLinearHeading(new Vector2d(57,10), Math.toRadians(160))
                 //SCAN APRIL TAG HERE
                 .waitSeconds(1)
                 .build();
@@ -135,52 +169,56 @@ public class redFar extends LinearOpMode {
 
 
     public void launch(double vel) {
-        subsystems.launcher.FlyLeft.setVelocity(vel);
-        subsystems.launcher.FlyRight.setVelocity(vel);
+        FlyL.setVelocity(vel);
+        FlyR.setVelocity(vel);
 
 
         stopwatch.reset();
 
         while(stopwatch.time() < 4) {
-            subsystems.intake.TransferL.setPower(0);
-            subsystems.intake.TransferR.setPower(0);
+            TransferL.setPower(0);
+            TransferR.setPower(0);
         }
 
-        subsystems.gateRamp.Gate.setPosition(BotConstants.GATE_DOWN_POS);
+        Gate.setPosition(BotConstants.GATE_DOWN_POS);
 
-        subsystems.intake.TransferL.setPower(0.15);
-        subsystems.intake.TransferR.setPower(0.15);
+        TransferL.setPower(0.15);
+        TransferR.setPower(0.15);
 
         stopwatch.reset();
 
         while(stopwatch.time() < 3) {
-            subsystems.intake.TransferL.setPower(0.15);
-            subsystems.intake.TransferR.setPower(0.15);
+            TransferL.setPower(0.15);
+            TransferR.setPower(0.15);
         }
 
-        subsystems.gateRamp.Gate.setPosition(BotConstants.GATE_UP_POS);
-        subsystems.intake.TransferL.setPower(0);
-        subsystems.intake.TransferR.setPower(0);
+        Gate.setPosition(BotConstants.GATE_UP_POS);
+        TransferL.setPower(0);
+        TransferR.setPower(0);
 
         while(stopwatch.time() < 4) {
-            subsystems.intake.TransferL.setPower(0);
-            subsystems.intake.TransferR.setPower(0);
+            TransferL.setPower(0);
+            TransferR.setPower(0);
         }
 
 
-        subsystems.gateRamp.Gate.setPosition(BotConstants.GATE_DOWN_POS);
+        Gate.setPosition(BotConstants.GATE_DOWN_POS);
 
-        subsystems.intake.TransferL.setPower(0.15);
-        subsystems.intake.TransferR.setPower(0.15);
+        TransferL.setPower(0.15);
+        TransferR.setPower(0.15);
 
         stopwatch.reset();
 
         while(stopwatch.time() < 3) {
-            subsystems.intake.TransferL.setPower(0.15);
-            subsystems.intake.TransferR.setPower(0.15);
+            TransferL.setPower(0.15);
+            TransferR.setPower(0.15);
         }
 
 
+    }
+
+    public void startMechs() {
+        Gate.setPosition(BotConstants.GATE_UP_POS);
     }
 }
 

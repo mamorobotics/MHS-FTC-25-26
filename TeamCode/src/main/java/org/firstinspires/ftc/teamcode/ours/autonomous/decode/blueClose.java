@@ -39,7 +39,7 @@ public class blueClose extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        Subsystems subsystems = new Subsystems(hardwareMap);
+        Subsystems subsystems = new Subsystems(hardwareMap, telemetry);
 
         subsystems.initialize();
 
@@ -114,21 +114,21 @@ public class blueClose extends LinearOpMode {
 
         Actions.runBlocking(new SequentialAction(
                 seq1,
-                subsystems.LaunchAll(shootingPose),
+                subsystems.launchAll(shootingPose),
                 seq12,
                 new ParallelAction(
                         subsystems.Intake(),
                         seqIntakeForward1
                 ),
                 seq2,
-                subsystems.LaunchAll(shootingPose),
+                subsystems.launchAll(shootingPose),
                 seq3,
                 new ParallelAction(
                         subsystems.Intake(),
                         seqIntakeForward2
                 ),
                 seq4,
-                subsystems.LaunchAll(shootingPose)
+                subsystems.launchAll(shootingPose)
         ));
 
         while (!isStarted() && !isStopRequested()) {
