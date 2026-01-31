@@ -23,7 +23,7 @@ public class blueFar {
         Vector2d shootingPos = new Vector2d(56,-8);
         Vector2d closeRow = new Vector2d(-12,-30);
         Vector2d middleRow = new Vector2d(12,-30);
-        Vector2d farRow = new Vector2d(37,-30);
+        Vector2d farRow = new Vector2d(35.5,-30);
 
 
         RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
@@ -34,10 +34,14 @@ public class blueFar {
         myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(60, -10, Math.toRadians(180)))
                 //SCAN AT START
                 .waitSeconds(1)
-                .strafeToLinearHeading(new Vector2d(56,-13), Math.toRadians(208))
+                .strafeToLinearHeading(new Vector2d(56,-7), Math.toRadians(208))
                 //.turn(Math.toRadians(-45))
-                .strafeTo(shootingPos)
+                .strafeToLinearHeading(farRow, Math.toRadians(270))
                 //SHOOT HERE
+                .strafeToLinearHeading(new Vector2d(35.5,-35), Math.toRadians(270))
+
+
+                //.lineToY(-52)
                 .waitSeconds(1)
                 .turn(Math.toRadians(135))
                 .splineTo(middleRow,Math.toRadians(270))

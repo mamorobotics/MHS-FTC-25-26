@@ -73,14 +73,14 @@ public class blueFar extends LinearOpMode {
         Pose2d shootingPose = new Pose2d(56, -8, Math.toRadians(200));
         Pose2d closeRowPose = new Pose2d(-12, -30, Math.toRadians(270));
         Pose2d middleRowPose = new Pose2d(12, -30, Math.toRadians(270));
-        Pose2d farRowPose = new Pose2d(37, -30, Math.toRadians(270));
+        Pose2d farRowPose = new Pose2d(35.5, -30, Math.toRadians(270));
 
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
 
         Vector2d shootingPos = new Vector2d(56,-8);
         Vector2d closeRow   = new Vector2d(-12, -30);
         Vector2d middleRow  = new Vector2d(12, -30);
-        Vector2d farRow     = new Vector2d(37, -30);
+        Vector2d farRow     = new Vector2d(35.5, -30);
 
 
 
@@ -90,20 +90,31 @@ public class blueFar extends LinearOpMode {
                 .waitSeconds(1)
                 .build();
 
-        //SHOOT
+        //Here in between is the shooting code
+
+        /// Go to balls 1
         Action seq12 = drive.actionBuilder(shootingPose)
                 .strafeToLinearHeading(farRow, Math.toRadians(270))
                 .build();
 
-        //INTAKE
-
-        Action seqIntakeForward1 = drive.actionBuilder(farRowPose)
-                .lineToY(-52)
+        //INTAKE first set of balls////////////////////////////////////////
+        Action seqIntakeForward1_1 = drive.actionBuilder(farRowPose)
+                .strafeToLinearHeading(new Vector2d(35.5,-35), Math.toRadians(270))
                 .build(); // FILL THIS PART IN
 
-        Action seq2 = drive.actionBuilder(new Pose2d(37,-52,Math.toRadians(270)))
-                .strafeToLinearHeading(shootingPos, Math.toRadians(200))
+        /// Insert intake motors spin between
+
+        Action seqIntakeForward1_2 = drive.actionBuilder(new Pose2d(35.5,-35,Math.toRadians(270)))
+                .strafeToLinearHeading(new Vector2d(35.5,-40), Math.toRadians(270))
                 .build();
+
+        /// Insert intake motors spin
+
+        /// go to shooting pos
+        /// /--------------------------------------------------------------
+
+        //.strafeToLinearHeading(shootingPos, Math.toRadians(200))
+          //      .build();
 
         //SHOOT
 
@@ -152,11 +163,23 @@ public class blueFar extends LinearOpMode {
         );
 
 */
+        ////////////////////////////////////////
+        /// runtime actions//////////////////////
+        /////////////////////////////////////////
         Actions.runBlocking(new SequentialAction(
                 seq1));
 
         launch(1050);
+        /// Underneath is going to intake location
+        Actions.runBlocking(new SequentialAction(seq12));
 
+        //Forward 1 to balls
+        Actions.runBlocking(new SequentialAction(seqIntakeForward1_1));
+
+        //Mustafa or max; insert intake motors spinning here...
+
+        //Forward 2 to balls
+        Actions.runBlocking(new SequentialAction(seqIntakeForward1_2));
 
 
         while (opModeIsActive()) {
