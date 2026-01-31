@@ -23,4 +23,5 @@ public class BotConstants {
     public static double GOAL_X = -63;
     public static double GOAL_Y = -51;
 
+    public static double GATE_Up_POS;
 }

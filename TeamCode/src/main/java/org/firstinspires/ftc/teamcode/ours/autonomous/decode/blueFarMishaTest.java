@@ -1,10 +1,12 @@
+
+
 package org.firstinspires.ftc.teamcode.ours.autonomous.decode;
 
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
-import com.acmerobotics.roadrunner.Pose2d;      // RR 0.5.x geometry
+import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
-import com.acmerobotics.roadrunner.Vector2d;    // RR 0.5.x geometry
+import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -14,15 +16,14 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-
 import org.firstinspires.ftc.teamcode.ours.BotConstants;
 import org.firstinspires.ftc.teamcode.ours.drive.MecanumDrive;
 import org.firstinspires.ftc.teamcode.ours.drive.Subsystems;
 import org.firstinspires.ftc.teamcode.ours.teleop.DriveTrain;
 
 
-@Autonomous(name = "Bluey Far Decode")
-public class blueFar extends LinearOpMode {
+@Autonomous(name = "Blue Far Decode")
+public class blueFarMishaTest extends LinearOpMode {
     static DriveTrain driveTrain = new DriveTrain();
     private static ElapsedTime stopwatch = new ElapsedTime();
 
@@ -30,7 +31,7 @@ public class blueFar extends LinearOpMode {
     private static CRServo IntakeBrushL, IntakeBrushR, TransferL, TransferR;
     private static Servo Gate, RampL, RampR;
 
-    // Flywheel:
+    MecanumDrive drive;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -42,7 +43,6 @@ public class blueFar extends LinearOpMode {
         FlyR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         FlyL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         FlyR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
         FlyL.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, BotConstants.flywheelCoefficients);
         FlyR.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, BotConstants.flywheelCoefficients);
 
@@ -61,7 +61,6 @@ public class blueFar extends LinearOpMode {
 
         RampR = hardwareMap.get(Servo.class, "rightRamp");
         RampL = hardwareMap.get(Servo.class, "leftRamp");
-
         RampL.setDirection(Servo.Direction.REVERSE);
 
         startMechs();
@@ -71,130 +70,105 @@ public class blueFar extends LinearOpMode {
 
         Pose2d startPose = new Pose2d(60, -10, Math.toRadians(180));
         Pose2d shootingPose = new Pose2d(56, -8, Math.toRadians(200));
-        Pose2d closeRowPose = new Pose2d(-12, -30, Math.toRadians(270));
-        Pose2d middleRowPose = new Pose2d(12, -30, Math.toRadians(270));
         Pose2d farRowPose = new Pose2d(35.5, -30, Math.toRadians(270));
+        Pose2d middleRowPose = new Pose2d(12, -30, Math.toRadians(270));
 
-        MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
+        drive = new MecanumDrive(hardwareMap, startPose);
 
-        Vector2d shootingPos = new Vector2d(56,-8);
-        Vector2d closeRow   = new Vector2d(-12, -30);
-        Vector2d middleRow  = new Vector2d(12, -30);
-        Vector2d farRow     = new Vector2d(35.5, -30);
+        Vector2d shootingPos = new Vector2d(56, -8);
+        Vector2d farRow = new Vector2d(35.5, -30);
+        Vector2d middleRow = new Vector2d(12, -30);
 
-
-
+        // Go to shooting position
         Action seq1 = drive.actionBuilder(startPose)
-                .strafeToLinearHeading(new Vector2d(56,-7), Math.toRadians(209))
-                //SCAN APRIL TAG HERE
+                .strafeToLinearHeading(new Vector2d(56, -7), Math.toRadians(209))
                 .waitSeconds(1)
                 .build();
 
-        //Here in between is the shooting code
-
-        /// Go to balls 1
+        // Go to far row
         Action seq12 = drive.actionBuilder(shootingPose)
                 .strafeToLinearHeading(farRow, Math.toRadians(270))
                 .build();
 
-        //INTAKE first set of balls////////////////////////////////////////
+        // Intake forward 1
         Action seqIntakeForward1_1 = drive.actionBuilder(farRowPose)
-                .strafeToLinearHeading(new Vector2d(35.5,-35), Math.toRadians(270))
-                .build(); // FILL THIS PART IN
-
-        /// Insert intake motors spin between
-
-        Action seqIntakeForward1_2 = drive.actionBuilder(new Pose2d(35.5,-35,Math.toRadians(270)))
-                .strafeToLinearHeading(new Vector2d(35.5,-40), Math.toRadians(270))
+                .strafeToLinearHeading(new Vector2d(35.5, -35), Math.toRadians(270))
                 .build();
 
-        /// Insert intake motors spin
+        // Intake forward 2
+        Action seqIntakeForward1_2 = drive.actionBuilder(new Pose2d(35.5, -35, Math.toRadians(270)))
+                .strafeToLinearHeading(new Vector2d(35.5, -40), Math.toRadians(270))
+                .build();
 
-        /// go to shooting pos
-        /// /--------------------------------------------------------------
-        Action seq2 = drive.actionBuilder(new Pose2d(35.5,-40, Math.toRadians(270)))
+        // Go back to shooting position
+        Action seq2 = drive.actionBuilder(new Pose2d(35.5, -40, Math.toRadians(270)))
                 .strafeToLinearHeading(shootingPos, Math.toRadians(200))
                 .build();
 
-        //SHOOT
-
-
-        /// go to middle row
+        // Go to middle row
         Action seq3 = drive.actionBuilder(shootingPose)
                 .strafeToLinearHeading(middleRow, Math.toRadians(270))
                 .build();
 
-        //INTAKE
-
+        // Intake forward middle
         Action seqIntakeForward2 = drive.actionBuilder(middleRowPose)
                 .lineToY(-52)
-                .build(); // FILL THIS PART IN; // FILL THIS PART IN
+                .build();
 
-        Action seq4 = drive.actionBuilder(new Pose2d(12,-52,Math.toRadians(270)))
+        // Go back to shooting position from middle
+        Action seq4 = drive.actionBuilder(new Pose2d(12, -52, Math.toRadians(270)))
                 .strafeToLinearHeading(shootingPos, Math.toRadians(200))
                 .build();
 
-        //SHOOT
-
-        //Action seq5 = drive.actionBuilder(shootingPose)
-        //      .splineTo(farRow, Math.toRadians(270))
-        //      .build();
-
-        //INTAKE
-
-        //TrajectoryActionBuilder blueClose = drive.actionBuilder(startPose)
-
-
 
         while (!isStarted() && !isStopRequested()) {
-
-            telemetry.addLine("BlueCloseAuto ready");
+            telemetry.addLine("BlueFarAuto ready");
             telemetry.update();
         }
 
         if (isStopRequested()) return;
 
-//        drive.followTrajectorySequence(blueClose);
-
-/*        Action trajectoryChosen = blueClose.build();
-
-        Actions.runBlocking(
-            new SequentialAction(
-                    trajectoryChosen
-            )
-        );
-
-*/
         ////////////////////////////////////////
-        /// runtime actions//////////////////////
-        /////////////////////////////////////////
+        /// Runtime actions
+        ////////////////////////////////////////
 
-        //goes into shooting position
-        Actions.runBlocking(new SequentialAction(
-                seq1));
+        // Go to shooting position
+        Actions.runBlocking(seq1);
 
+        // Shoot first set
         launch(1050);
 
-        /// Underneath is going to intake location
-        Actions.runBlocking(new SequentialAction(seq12));
+        // Go to far row
+        Actions.runBlocking(seq12);
 
-        //Intake
-        intake((new Vector2d(35.5, 40), 270);
+        // Intake
+        intake();
 
+        // Forward 1
+        Actions.runBlocking(seqIntakeForward1_1);
 
-        //Forward 1 to balls
-        Actions.runBlocking(new SequentialAction(seqIntakeForward1_1));
+        // Forward 2
+        Actions.runBlocking(seqIntakeForward1_2);
 
-        //Mustafa or max; insert intake motors spinning here...
+        // Go back to shooting position
+        Actions.runBlocking(seq2);
 
-        //Forward 2 to balls
-        Actions.runBlocking(new SequentialAction(seqIntakeForward1_2));
+        // Shoot second set
+        launch(1050);
 
-        //Mustafa or max; insert intake motors spinning here...
+        // Go to middle row
+        Actions.runBlocking(seq3);
 
-       /// go to shooting position
-        Actions.runBlocking(new SequentialAction(seqIntakeForward2));
+        // Intake
+        intake();
 
+        // Forward into middle row
+        Actions.runBlocking(seqIntakeForward2);
+
+        // Go back to shooting
+        Actions.runBlocking(seq4);
+
+        // Shoot third set
         launch(1050);
 
         while (opModeIsActive()) {
@@ -203,119 +177,91 @@ public class blueFar extends LinearOpMode {
     }
 
     public void launch(double vel) {
-
         FlyL.setVelocity(vel);
         FlyR.setVelocity(vel);
 
-
+        // Wait for flywheel to ramp up
         stopwatch.reset();
-
-        while(stopwatch.time() < 4) {
-            TransferL.setPower(0);
-            TransferR.setPower(0);
+        while (stopwatch.time() < 4) {
+            idle();
         }
 
+        // Launch ball 1
         Gate.setPosition(BotConstants.GATE_DOWN_POS);
-
         TransferL.setPower(0.15);
         TransferR.setPower(0.15);
-
         stopwatch.reset();
-
-        while(stopwatch.time() < 3) {
-            TransferL.setPower(0.15);
-            TransferR.setPower(0.15);
+        while (stopwatch.time() < 3) {
+            idle();
         }
 
+        // Reset for ball 2
         Gate.setPosition(BotConstants.GATE_UP_POS);
         TransferL.setPower(0);
         TransferR.setPower(0);
-
-        while(stopwatch.time() < 4) {
-            TransferL.setPower(0);
-            TransferR.setPower(0);
+        stopwatch.reset();
+        while (stopwatch.time() < 1) {
+            idle();
         }
 
-
+        // Launch ball 2
         Gate.setPosition(BotConstants.GATE_DOWN_POS);
-
         TransferL.setPower(0.15);
         TransferR.setPower(0.15);
-
-        IntakeBrushL.setPower(0.15);
-        IntakeBrushR.setPower(0.15);
-
         stopwatch.reset();
-
-        while(stopwatch.time() < 3) {
-            TransferL.setPower(0.15);
-            TransferR.setPower(0.15);
+        while (stopwatch.time() < 3) {
+            idle();
         }
 
+        // Reset for ball 3
+        Gate.setPosition(BotConstants.GATE_UP_POS);
+        TransferL.setPower(0);
+        TransferR.setPower(0);
+        stopwatch.reset();
+        while (stopwatch.time() < 1) {
+            idle();
+        }
 
+        // Launch ball 3
+        Gate.setPosition(BotConstants.GATE_DOWN_POS);
+        TransferL.setPower(0.15);
+        TransferR.setPower(0.15);
+        stopwatch.reset();
+        while (stopwatch.time() < 3) {
+            idle();
+        }
+
+        // Stop everything
+        Gate.setPosition(BotConstants.GATE_UP_POS);
+        TransferL.setPower(0);
+        TransferR.setPower(0);
+        FlyL.setVelocity(0);
+        FlyR.setVelocity(0);
     }
 
-
-    public void intake(Vector2d targetCoordinates, double DegreeAngle) {
-        Gate.setPosition(BotConstants.GATE_Up_POS);
+    public void intake() {
+        Gate.setPosition(BotConstants.GATE_UP_POS);
 
         IntakeBrushL.setPower(0.15);
         IntakeBrushR.setPower(0.15);
-
         TransferL.setPower(0.15);
         TransferR.setPower(0.15);
 
-        .strafeToLinearHeading(targetCoordinates, Math.toRadians(DegreeAngle));
-
-
+        // Wait for intake to grab
         stopwatch.reset();
+        while (stopwatch.time() < 3) {
+            idle();
+        }
 
-
-
+        // Stop and close gate
         TransferL.setPower(0);
         TransferR.setPower(0);
         IntakeBrushL.setPower(0);
         IntakeBrushR.setPower(0);
-
-        stopwatch.reset();
         Gate.setPosition(BotConstants.GATE_DOWN_POS);
-        }
-
-    private void strafeToLinearHeading(Vector2d vector2d, double radians) {
     }
-
-
-}
-
-
 
     public void startMechs() {
         Gate.setPosition(BotConstants.GATE_UP_POS);
     }
-
 }
-
-
-
-
-/*
-
-subsystems.LaunchAll(shootingPose),
-                seq12,
-                new ParallelAction(
-                        subsystems.Intake(),
-                        seqIntakeForward1
-                ),
-                seq2,
-                subsystems.LaunchAll(shootingPose),
-                seq3,
-                new ParallelAction(
-                        subsystems.Intake(),
-                        seqIntakeForward2
-                ),
-                seq4,
-                subsystems.LaunchAll(shootingPose)
-
-
-
- */
