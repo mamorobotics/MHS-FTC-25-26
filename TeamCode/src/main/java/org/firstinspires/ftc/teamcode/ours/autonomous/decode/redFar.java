@@ -16,7 +16,7 @@ import org.firstinspires.ftc.teamcode.ours.teleop.DriveTrain;
 
 
 @Autonomous(name = "Blue Far Decode")
-public class blueFar extends LinearOpMode {
+public class redFar extends LinearOpMode {
     static DriveTrain driveTrain = new DriveTrain();
 
     // Flywheel:
@@ -47,7 +47,7 @@ public class blueFar extends LinearOpMode {
 
 
         Action seq1 = drive.actionBuilder(startPose)
-                .strafeToLinearHeading(new Vector2d(56,-13), Math.toRadians(208))
+                .strafeToLinearHeading(new Vector2d(56,13), Math.toRadians(152))
                 //SCAN APRIL TAG HERE
                 .waitSeconds(1)
                 .build();
@@ -98,7 +98,7 @@ public class blueFar extends LinearOpMode {
 
 
 
-        ));
+                ));
 
         while (!isStarted() && !isStopRequested()) {
 

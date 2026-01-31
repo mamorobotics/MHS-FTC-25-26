@@ -34,8 +34,8 @@ public class blueFar {
         myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(60, -10, Math.toRadians(180)))
                 //SCAN AT START
                 .waitSeconds(1)
-                .splineTo(farRow, Math.toRadians(270))
-                .turn(Math.toRadians(-45))
+                .strafeToLinearHeading(new Vector2d(56,-13), Math.toRadians(208))
+                //.turn(Math.toRadians(-45))
                 .strafeTo(shootingPos)
                 //SHOOT HERE
                 .waitSeconds(1)

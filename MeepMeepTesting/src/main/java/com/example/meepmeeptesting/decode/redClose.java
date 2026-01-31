@@ -29,7 +29,7 @@ public class redClose {
                 .build();
 
         myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(-60, 34, Math.toRadians(-90)))
-                .splineTo(new Vector2d(-12,10), Math.toRadians(180))
+                .strafeToLinearHeading(new Vector2d(56,13), Math.toRadians(158  ))
                 //SCAN APRIL TAG HERE
                 .waitSeconds(1)
                 .turn(Math.toRadians(-90))
