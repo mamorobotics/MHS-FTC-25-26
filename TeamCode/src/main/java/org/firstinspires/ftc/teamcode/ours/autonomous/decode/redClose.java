@@ -24,8 +24,8 @@ import org.firstinspires.ftc.teamcode.ours.drive.Subsystems;
 import org.firstinspires.ftc.teamcode.ours.teleop.DriveTrain;
 
 
-@Autonomous(name = "Blue Close Decode")
-public class blueClose extends LinearOpMode {
+@Autonomous(name = "red Close Decode")
+public class redClose extends LinearOpMode {
 
 
     static DriveTrain driveTrain = new DriveTrain();
@@ -47,7 +47,7 @@ public class blueClose extends LinearOpMode {
         telemetry.addLine("Autonomous Initialized");
         telemetry.update();
 
-        Pose2d startPose = new Pose2d(-60, -34, Math.toRadians(0));
+        Pose2d startPose = new Pose2d(-60, 34, Math.toRadians(0));
         Pose2d shootingPose = new Pose2d(-6, 6, Math.toRadians(225));
         Pose2d closeRowPose = new Pose2d(-12, -30, Math.toRadians(270));
         Pose2d middleRowPose = new Pose2d(12, -30, Math.toRadians(270));
@@ -64,7 +64,7 @@ public class blueClose extends LinearOpMode {
 
         Action seq1 = drive.actionBuilder(startPose)
                 .waitSeconds(18)
-                .strafeToLinearHeading(new Vector2d(-16,-45), Math.toRadians(0))
+                .strafeToLinearHeading(new Vector2d(-16,45), Math.toRadians(0))
                 //SCAN APRIL TAG HERE
                 .build();
 
@@ -105,8 +105,8 @@ public class blueClose extends LinearOpMode {
         //SHOOT
 
         //Action seq5 = drive.actionBuilder(shootingPose)
-          //      .splineTo(farRow, Math.toRadians(270))
-          //      .build();
+        //      .splineTo(farRow, Math.toRadians(270))
+        //      .build();
 
         //INTAKE
 
@@ -119,7 +119,7 @@ public class blueClose extends LinearOpMode {
 
         while (!isStarted() && !isStopRequested()) {
 
-            telemetry.addLine("BlueCloseAuto ready");
+            telemetry.addLine("RedCloseAuto ready");
             telemetry.update();
         }
 

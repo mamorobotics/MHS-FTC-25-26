@@ -85,7 +85,7 @@ public class redFar extends LinearOpMode {
 
 
         Action seq1 = drive.actionBuilder(startPose)
-                .strafeToLinearHeading(new Vector2d(57,10), Math.toRadians(160))
+                .strafeToLinearHeading(new Vector2d(57,7), Math.toRadians(160))
                 //SCAN APRIL TAG HERE
                 .waitSeconds(1)
                 .build();
@@ -160,7 +160,7 @@ public class redFar extends LinearOpMode {
 
         ));
 
-        launch(1100);
+        launch(1050);
 
         while (opModeIsActive()) {
             idle();
@@ -206,6 +206,9 @@ public class redFar extends LinearOpMode {
 
         TransferL.setPower(0.15);
         TransferR.setPower(0.15);
+
+        IntakeBrushL.setPower(0.15);
+        IntakeBrushR.setPower(0.15);
 
         stopwatch.reset();
 

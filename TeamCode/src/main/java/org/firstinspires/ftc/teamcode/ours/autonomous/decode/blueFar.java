@@ -85,7 +85,7 @@ public class blueFar extends LinearOpMode {
 
 
         Action seq1 = drive.actionBuilder(startPose)
-                .strafeToLinearHeading(new Vector2d(56,-13), Math.toRadians(208))
+                .strafeToLinearHeading(new Vector2d(56,-7), Math.toRadians(209))
                 //SCAN APRIL TAG HERE
                 .waitSeconds(1)
                 .build();
@@ -155,7 +155,7 @@ public class blueFar extends LinearOpMode {
         Actions.runBlocking(new SequentialAction(
                 seq1));
 
-        launch(1100);
+        launch(1050);
 
 
 
@@ -202,6 +202,9 @@ public class blueFar extends LinearOpMode {
 
         TransferL.setPower(0.15);
         TransferR.setPower(0.15);
+
+        IntakeBrushL.setPower(0.15);
+        IntakeBrushR.setPower(0.15);
 
         stopwatch.reset();
 
