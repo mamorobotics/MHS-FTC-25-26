@@ -43,6 +43,7 @@ public class DecodeDriverMode extends OpMode
     private boolean gateUp = false;
     private static final double intakeStopSpeed = 0;
     private static final double intakeRunSpeed = 0.4;
+    private static final double transferRunSpeed = 0.2;
 
 
     // Gate:
@@ -198,8 +199,8 @@ public class DecodeDriverMode extends OpMode
             }
 
             if (transferSpin) {
-                TransferL.setPower(intakeRunSpeed);
-                TransferR.setPower(intakeRunSpeed);
+                TransferL.setPower(transferRunSpeed);
+                TransferR.setPower(transferRunSpeed);
             }
             else {
                 TransferL.setPower(intakeStopSpeed);

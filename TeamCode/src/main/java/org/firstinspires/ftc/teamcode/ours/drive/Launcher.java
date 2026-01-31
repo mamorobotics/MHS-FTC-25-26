@@ -8,13 +8,16 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.ours.BotConstants;
 
 public class Launcher {
-    private DcMotorEx FlyRight, FlyLeft;
+    public DcMotorEx FlyRight, FlyLeft;
 
-    public Launcher(HardwareMap hardwareMap) {
+    private Telemetry telemetry1;
+
+    public Launcher(HardwareMap hardwareMap, Telemetry telemetry) {
         FlyLeft = hardwareMap.get(DcMotorEx.class, "leftLauncher");
         FlyRight = hardwareMap.get(DcMotorEx.class, "rightLauncher");
 
@@ -25,6 +28,8 @@ public class Launcher {
         FlyRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         FlyLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         FlyRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        telemetry1 = telemetry;
     }
 
     public class SpinUp implements Action {
@@ -48,9 +53,9 @@ public class Launcher {
             double Rvel = FlyRight.getVelocity();
             packet.put("leftVelocity", Lvel);
             packet.put("rightVelocity", Rvel);
-            boolean above = Lvel > speed * 0.95 && Rvel > speed * 0.95;
-            boolean below = Lvel < speed * 1.05 && Rvel < speed * 1.05;
-            return above && below;
+            boolean above = Lvel > speed * 0.96 && Rvel > speed * 0.96;
+            boolean below = Lvel < speed * 1.06 && Rvel < speed * 1.06;
+            return !(above && below);
         }
     }
 
@@ -107,7 +112,13 @@ public class Launcher {
             packet.put("leftVelocity", Lvel);
             packet.put("rightVelocity", Rvel);
 
-            return !(FlyLeft.getCurrent(CurrentUnit.AMPS) > BotConstants.LAUNCH_AMPS &&  FlyRight.getCurrent(CurrentUnit.AMPS) > BotConstants.LAUNCH_AMPS);
+            boolean leftLaunched = FlyLeft.getCurrent(CurrentUnit.AMPS) > BotConstants.LAUNCH_AMPS;
+            boolean rightLaunched = FlyRight.getCurrent(CurrentUnit.AMPS) > BotConstants.LAUNCH_AMPS;
+            telemetry1.addData("LCurrent", FlyLeft.getCurrent(CurrentUnit.AMPS));
+            telemetry1.update();
+
+
+            return true;
         }
     }
 

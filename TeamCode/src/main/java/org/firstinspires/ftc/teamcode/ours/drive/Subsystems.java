@@ -4,16 +4,18 @@ import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.SleepAction;
 import com.qualcomm.hardware.bosch.BNO055Util;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.ours.BotConstants;
 
 public class Subsystems {
-    private IntakeTransfer intake;
-    private Launcher launcher;
-    private GateRamp gateRamp;
+    public IntakeTransfer intake;
+    public Launcher launcher;
+    public GateRamp gateRamp;
 
     private double pickIntakeSpeed = 0.4; // speed for the intake when it is picking up artifacts
 
@@ -21,17 +23,19 @@ public class Subsystems {
 
     private double transportIntakeSpeed = 0.035; // speed for the intake to spin while moving, to hold a 3rd artifact in
 
-    private double launchTransferSpeed = 0.1; // speed for the transfer when launching
+    private double launchTransferSpeed = 0.15; // speed for the transfer when launching
 
     private double feedIntakeSpeed = 0.2;
     private double feedTransferSpeed = 0.15;
+    private Telemetry telemetry1;
 
 
 
-    public Subsystems(HardwareMap hardwareMap) {
+    public Subsystems(HardwareMap hardwareMap, Telemetry telemetry) {
         intake = new IntakeTransfer(hardwareMap);
-        launcher = new Launcher(hardwareMap);
-        gateRamp = new GateRamp(hardwareMap);
+        launcher = new Launcher(hardwareMap, telemetry);
+        gateRamp = new GateRamp(hardwareMap, telemetry);
+        telemetry1 = telemetry;
     }
 
     public Action initialize() {
@@ -39,7 +43,7 @@ public class Subsystems {
         return new ParallelAction(
                 intake.intakeStop(),
                 launcher.spinDown(),
-                gateRamp.gateDown(),
+                gateRamp.gateUp(),
                 gateRamp.rampMove(BotConstants.RAMP_NEUTRAL_POS)
         );
     }
@@ -69,29 +73,31 @@ public class Subsystems {
         );
     }
 
-    public Action LaunchOne(Pose2d pose) {
+    public Action launchOne(Pose2d pose) {
         double flywheelSpeed = PoseFlywheelSpeed(pose);
         double rampPos = PoseRampPosition(pose);
 
-        Action one = new SequentialAction(
+
+        return new SequentialAction(
                 LaunchPrepare(pose),
+                gateRamp.gateUp(),
+                new SleepAction(0.5),
                 gateRamp.gateDown(),
+                new SleepAction(0.5),
                 intake.launchingRun(launchTransferSpeed),
                 launcher.launch(flywheelSpeed),
                 gateRamp.gateUp(),
                 intake.feedRun(feedIntakeSpeed, feedTransferSpeed)
         );
-
-        return one;
     }
 
     // NOTE - this is currently setup to launch 3 balls.
-    public Action LaunchAll(Pose2d pose) {
+    public Action launchAll(Pose2d pose) {
         // imma be real i don't know why i made this a separate function from LaunchOne but there may be a reason which future me (or you) will discover
         Action all = new SequentialAction(
-                LaunchOne(pose),
-                LaunchOne(pose),
-                LaunchOne(pose)
+                launchOne(pose),
+                launchOne(pose),
+                launchOne(pose)
         );
 
         return all;

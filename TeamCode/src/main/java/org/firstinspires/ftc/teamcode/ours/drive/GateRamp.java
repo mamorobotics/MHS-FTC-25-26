@@ -7,18 +7,23 @@ import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.ours.BotConstants;
 
 public class GateRamp {
-    private static Servo Gate, RampL, RampR;
+    public Servo Gate, RampL, RampR;
 
-    public GateRamp(HardwareMap hardwareMap) {
+    private Telemetry telemetry1;
+
+    public GateRamp(HardwareMap hardwareMap, Telemetry telemetry) {
         Gate = hardwareMap.get(Servo.class, "gate");
 
         RampR = hardwareMap.get(Servo.class, "rightRamp");
         RampL = hardwareMap.get(Servo.class, "leftRamp");
 
         RampL.setDirection(Servo.Direction.REVERSE);
+
+        telemetry1 = telemetry;
     }
 
     public class GateDown implements Action {
@@ -28,10 +33,11 @@ public class GateRamp {
         public boolean run(@NonNull TelemetryPacket packet) {
             if(!initialized) {
                 Gate.setPosition(BotConstants.GATE_DOWN_POS);
-                initialized = false;
+                initialized = true;
             }
 
-            return Gate.getPosition() < BotConstants.GATE_DOWN_POS - 0.005;
+            return false;
+
         }
     }
 
@@ -46,10 +52,11 @@ public class GateRamp {
         public boolean run(@NonNull TelemetryPacket packet) {
             if(!initialized) {
                 Gate.setPosition(BotConstants.GATE_UP_POS);
-                initialized = false;
+                initialized = true;
             }
 
-            return Gate.getPosition() > BotConstants.GATE_UP_POS + 0.005;
+
+            return false;
         }
     }
 
@@ -75,7 +82,7 @@ public class GateRamp {
                 initialized = true;
             }
 
-            return !(RampL.getPosition() == pos && RampR.getPosition() == pos);
+            return false;
         }
     }
 

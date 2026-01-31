@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class IntakeTransfer {
-    private static CRServo IntakeBrushL, IntakeBrushR, TransferL, TransferR;
+    public CRServo IntakeBrushL, IntakeBrushR, TransferL, TransferR;
 
     public IntakeTransfer(HardwareMap hardwareMap) {
         IntakeBrushL = hardwareMap.get(CRServo.class, "leftIntake");
@@ -45,7 +45,7 @@ public class IntakeTransfer {
                 initialized = true;
             }
 
-            return true; // I don't think there's any condition checking needed.
+            return false; // I don't think there's any condition checking needed.
         }
     }
 
@@ -70,7 +70,7 @@ public class IntakeTransfer {
                 initialized = true;
             }
 
-            return true; // I don't think there's any condition checking needed.
+            return false; // I don't think there's any condition checking needed.
         }
     }
 
@@ -101,7 +101,7 @@ public class IntakeTransfer {
                 initialized = true;
             }
 
-            return true; // I don't think there's any condition checking needed.
+            return false; // I don't think there's any condition checking needed.
         }
     }
 
@@ -132,7 +132,7 @@ public class IntakeTransfer {
                 initialized = true;
             }
 
-            return true; // I don't think there's any condition checking needed.
+            return false; // I don't think there's any condition checking needed.
         }
     }
 
@@ -164,7 +164,7 @@ public class IntakeTransfer {
                 initialized = true;
             }
 
-            return true; // I don't think there's any condition checking needed.
+            return false; // I don't think there's any condition checking needed.
         }
     }
 

@@ -8,8 +8,10 @@ import com.acmerobotics.roadrunner.Vector2d;    // RR 0.5.x geometry
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 
+import org.firstinspires.ftc.teamcode.ours.BotConstants;
 import org.firstinspires.ftc.teamcode.ours.drive.MecanumDrive;
 import org.firstinspires.ftc.teamcode.ours.drive.Subsystems;
 import org.firstinspires.ftc.teamcode.ours.teleop.DriveTrain;
@@ -18,12 +20,14 @@ import org.firstinspires.ftc.teamcode.ours.teleop.DriveTrain;
 @Autonomous(name = "Blue Far Decode")
 public class redFar extends LinearOpMode {
     static DriveTrain driveTrain = new DriveTrain();
+    private Subsystems subsystems;
+    private static ElapsedTime stopwatch = new ElapsedTime();
 
     // Flywheel:
 
     @Override
     public void runOpMode() throws InterruptedException {
-        Subsystems subsystems = new Subsystems(hardwareMap);
+        Subsystems subsystems = new Subsystems(hardwareMap, telemetry);
 
         subsystems.initialize();
 
@@ -93,12 +97,7 @@ public class redFar extends LinearOpMode {
 
         //TrajectoryActionBuilder blueClose = drive.actionBuilder(startPose)
 
-        Actions.runBlocking(new SequentialAction(
-                seq1,
 
-
-
-                ));
 
         while (!isStarted() && !isStopRequested()) {
 
@@ -117,10 +116,71 @@ public class redFar extends LinearOpMode {
                     trajectoryChosen
             )
         );
+
+
 */
+        Actions.runBlocking(new SequentialAction(
+                seq1
+
+
+
+        ));
+
+        launch(1100);
+
         while (opModeIsActive()) {
             idle();
         }
+    }
+
+
+    public void launch(double vel) {
+        subsystems.launcher.FlyLeft.setVelocity(vel);
+        subsystems.launcher.FlyRight.setVelocity(vel);
+
+
+        stopwatch.reset();
+
+        while(stopwatch.time() < 4) {
+            subsystems.intake.TransferL.setPower(0);
+            subsystems.intake.TransferR.setPower(0);
+        }
+
+        subsystems.gateRamp.Gate.setPosition(BotConstants.GATE_DOWN_POS);
+
+        subsystems.intake.TransferL.setPower(0.15);
+        subsystems.intake.TransferR.setPower(0.15);
+
+        stopwatch.reset();
+
+        while(stopwatch.time() < 3) {
+            subsystems.intake.TransferL.setPower(0.15);
+            subsystems.intake.TransferR.setPower(0.15);
+        }
+
+        subsystems.gateRamp.Gate.setPosition(BotConstants.GATE_UP_POS);
+        subsystems.intake.TransferL.setPower(0);
+        subsystems.intake.TransferR.setPower(0);
+
+        while(stopwatch.time() < 4) {
+            subsystems.intake.TransferL.setPower(0);
+            subsystems.intake.TransferR.setPower(0);
+        }
+
+
+        subsystems.gateRamp.Gate.setPosition(BotConstants.GATE_DOWN_POS);
+
+        subsystems.intake.TransferL.setPower(0.15);
+        subsystems.intake.TransferR.setPower(0.15);
+
+        stopwatch.reset();
+
+        while(stopwatch.time() < 3) {
+            subsystems.intake.TransferL.setPower(0.15);
+            subsystems.intake.TransferR.setPower(0.15);
+        }
+
+
     }
 }
 

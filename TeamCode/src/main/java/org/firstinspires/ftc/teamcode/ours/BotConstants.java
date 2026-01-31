@@ -14,9 +14,11 @@ public class BotConstants {
 
     public static double RAMP_NEUTRAL_POS = 0.38;
 
-    public static double GATE_UP_POS = 0.04;
+    public static double GATE_UP_POS = 0.01;
 
-    public static double GATE_DOWN_POS = 0.01;
+    public static double GATE_DOWN_POS = 0.04;
+
+    public static double GATE_MIDDLE_POS = 0.02;
 
     public static double GOAL_X = -63;
     public static double GOAL_Y = -51;
