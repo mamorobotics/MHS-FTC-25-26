@@ -85,14 +85,14 @@ public class redFar extends LinearOpMode {
 
 
         Action seq1 = drive.actionBuilder(startPose)
-                .strafeToLinearHeading(new Vector2d(57,7), Math.toRadians(160))
+                .strafeToLinearHeading(new Vector2d(57,4), Math.toRadians(158))
                 //SCAN APRIL TAG HERE
                 .waitSeconds(1)
                 .build();
 
         //SHOOT
         Action seq12 = drive.actionBuilder(shootingPose)
-                .strafeToLinearHeading(farRow, Math.toRadians(270))
+                .strafeToLinearHeading(new Vector2d(38,16), Math.toRadians(180))
                 .build();
 
         //INTAKE
@@ -155,12 +155,13 @@ public class redFar extends LinearOpMode {
 */
         Actions.runBlocking(new SequentialAction(
                 seq1
-
-
-
         ));
 
-        launch(1050);
+        launch(1050, 0.38);
+
+        Actions.runBlocking(new SequentialAction(
+                seq12
+        ));
 
         while (opModeIsActive()) {
             idle();
@@ -168,14 +169,17 @@ public class redFar extends LinearOpMode {
     }
 
 
-    public void launch(double vel) {
+    public void launch(double vel, double angle) {
         FlyL.setVelocity(vel);
         FlyR.setVelocity(vel);
+
+        RampL.setPosition(angle);
+        RampR.setPosition(angle);
 
 
         stopwatch.reset();
 
-        while(stopwatch.time() < 4) {
+        while (stopwatch.time() < 4) {
             TransferL.setPower(0);
             TransferR.setPower(0);
         }
@@ -187,7 +191,7 @@ public class redFar extends LinearOpMode {
 
         stopwatch.reset();
 
-        while(stopwatch.time() < 3) {
+        while (stopwatch.time() < 3) {
             TransferL.setPower(0.15);
             TransferR.setPower(0.15);
         }
@@ -196,7 +200,7 @@ public class redFar extends LinearOpMode {
         TransferL.setPower(0);
         TransferR.setPower(0);
 
-        while(stopwatch.time() < 4) {
+        while (stopwatch.time() < 4) {
             TransferL.setPower(0);
             TransferR.setPower(0);
         }
@@ -212,12 +216,10 @@ public class redFar extends LinearOpMode {
 
         stopwatch.reset();
 
-        while(stopwatch.time() < 3) {
+        while (stopwatch.time() < 3) {
             TransferL.setPower(0.15);
             TransferR.setPower(0.15);
         }
-
-
     }
 
     public void startMechs() {
